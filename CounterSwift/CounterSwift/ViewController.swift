@@ -1,11 +1,3 @@
-//
-//  ViewController.swift
-//  CounterSwift
-//
-//  Created by Palmer Paul on 6/15/17.
-//  Copyright © 2017 Palmer Paul. All rights reserved.
-//
-
 import UIKit
 import YogaKit
 
@@ -54,7 +46,7 @@ class ViewController: UIViewController {
         }
         root.addSubview(buttonRow)
         
-        let incrementButton: UIButton = UIButton.init(type: .roundedRect)
+        let incrementButton: UIButton = UIButton.init(type: .system)
         incrementButton.setTitle("Increment", for: .normal)
         incrementButton.setTitleColor(.green, for: .normal)
         incrementButton.addTarget(self, action: .incrementAction, for: .touchUpInside)
@@ -64,7 +56,7 @@ class ViewController: UIViewController {
         }
         buttonRow.addSubview(incrementButton)
         
-        let decrementButton: UIButton = UIButton.init(type: .roundedRect)
+        let decrementButton: UIButton = UIButton.init(type: .system)
         decrementButton.setTitle("Decrement", for: .normal)
         decrementButton.setTitleColor(.red, for: .normal)
         decrementButton.addTarget(self, action: .decrementAction, for: .touchUpInside)
