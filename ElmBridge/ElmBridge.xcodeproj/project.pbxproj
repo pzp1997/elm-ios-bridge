@@ -1,0 +1,426 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		843DE9C01EE7434400CCEC20 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 843DE9BF1EE7434400CCEC20 /* AppDelegate.m */; };
+		843DE9C31EE7434400CCEC20 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 843DE9C21EE7434400CCEC20 /* main.m */; };
+		843DE9C51EE7434400CCEC20 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 843DE9C41EE7434400CCEC20 /* Assets.xcassets */; };
+		843DE9C81EE7434400CCEC20 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 843DE9C61EE7434400CCEC20 /* MainMenu.xib */; };
+		843DE9D31EE7434400CCEC20 /* ElmBridgeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 843DE9D21EE7434400CCEC20 /* ElmBridgeTests.m */; };
+		843DE9DE1EE744CA00CCEC20 /* ChakraProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 843DE9DD1EE744CA00CCEC20 /* ChakraProxy.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		843DE9CF1EE7434400CCEC20 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 843DE9B31EE7434400CCEC20 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 843DE9BA1EE7434400CCEC20;
+			remoteInfo = ElmBridge;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		843DE9BB1EE7434400CCEC20 /* ElmBridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ElmBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		843DE9BE1EE7434400CCEC20 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		843DE9BF1EE7434400CCEC20 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		843DE9C21EE7434400CCEC20 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		843DE9C41EE7434400CCEC20 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		843DE9C71EE7434400CCEC20 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		843DE9C91EE7434400CCEC20 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		843DE9CE1EE7434400CCEC20 /* ElmBridgeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ElmBridgeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		843DE9D21EE7434400CCEC20 /* ElmBridgeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ElmBridgeTests.m; sourceTree = "<group>"; };
+		843DE9D41EE7434400CCEC20 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		843DE9DD1EE744CA00CCEC20 /* ChakraProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChakraProxy.m; sourceTree = "<group>"; };
+		843DE9DF1EE744E800CCEC20 /* ChakraProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChakraProxy.h; sourceTree = "<group>"; };
+		843DE9E11EE7506600CCEC20 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../modules/ChakraCore/README.md; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		843DE9B81EE7434400CCEC20 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		843DE9CB1EE7434400CCEC20 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		843DE9B21EE7434400CCEC20 = {
+			isa = PBXGroup;
+			children = (
+				843DE9BD1EE7434400CCEC20 /* ElmBridge */,
+				843DE9D11EE7434400CCEC20 /* ElmBridgeTests */,
+				843DE9BC1EE7434400CCEC20 /* Products */,
+				843DE9E01EE7506600CCEC20 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		843DE9BC1EE7434400CCEC20 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				843DE9BB1EE7434400CCEC20 /* ElmBridge.app */,
+				843DE9CE1EE7434400CCEC20 /* ElmBridgeTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		843DE9BD1EE7434400CCEC20 /* ElmBridge */ = {
+			isa = PBXGroup;
+			children = (
+				843DE9BE1EE7434400CCEC20 /* AppDelegate.h */,
+				843DE9BF1EE7434400CCEC20 /* AppDelegate.m */,
+				843DE9C41EE7434400CCEC20 /* Assets.xcassets */,
+				843DE9C61EE7434400CCEC20 /* MainMenu.xib */,
+				843DE9C91EE7434400CCEC20 /* Info.plist */,
+				843DE9C11EE7434400CCEC20 /* Supporting Files */,
+				843DE9DD1EE744CA00CCEC20 /* ChakraProxy.m */,
+				843DE9DF1EE744E800CCEC20 /* ChakraProxy.h */,
+			);
+			path = ElmBridge;
+			sourceTree = "<group>";
+		};
+		843DE9C11EE7434400CCEC20 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				843DE9C21EE7434400CCEC20 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		843DE9D11EE7434400CCEC20 /* ElmBridgeTests */ = {
+			isa = PBXGroup;
+			children = (
+				843DE9D21EE7434400CCEC20 /* ElmBridgeTests.m */,
+				843DE9D41EE7434400CCEC20 /* Info.plist */,
+			);
+			path = ElmBridgeTests;
+			sourceTree = "<group>";
+		};
+		843DE9E01EE7506600CCEC20 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				843DE9E11EE7506600CCEC20 /* README.md */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		843DE9BA1EE7434400CCEC20 /* ElmBridge */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 843DE9D71EE7434400CCEC20 /* Build configuration list for PBXNativeTarget "ElmBridge" */;
+			buildPhases = (
+				843DE9B71EE7434400CCEC20 /* Sources */,
+				843DE9B81EE7434400CCEC20 /* Frameworks */,
+				843DE9B91EE7434400CCEC20 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ElmBridge;
+			productName = ElmBridge;
+			productReference = 843DE9BB1EE7434400CCEC20 /* ElmBridge.app */;
+			productType = "com.apple.product-type.application";
+		};
+		843DE9CD1EE7434400CCEC20 /* ElmBridgeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 843DE9DA1EE7434400CCEC20 /* Build configuration list for PBXNativeTarget "ElmBridgeTests" */;
+			buildPhases = (
+				843DE9CA1EE7434400CCEC20 /* Sources */,
+				843DE9CB1EE7434400CCEC20 /* Frameworks */,
+				843DE9CC1EE7434400CCEC20 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				843DE9D01EE7434400CCEC20 /* PBXTargetDependency */,
+			);
+			name = ElmBridgeTests;
+			productName = ElmBridgeTests;
+			productReference = 843DE9CE1EE7434400CCEC20 /* ElmBridgeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		843DE9B31EE7434400CCEC20 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = "Palmer Paul";
+				TargetAttributes = {
+					843DE9BA1EE7434400CCEC20 = {
+						CreatedOnToolsVersion = 8.2.1;
+						ProvisioningStyle = Automatic;
+					};
+					843DE9CD1EE7434400CCEC20 = {
+						CreatedOnToolsVersion = 8.2.1;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 843DE9BA1EE7434400CCEC20;
+					};
+				};
+			};
+			buildConfigurationList = 843DE9B61EE7434400CCEC20 /* Build configuration list for PBXProject "ElmBridge" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 843DE9B21EE7434400CCEC20;
+			productRefGroup = 843DE9BC1EE7434400CCEC20 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				843DE9BA1EE7434400CCEC20 /* ElmBridge */,
+				843DE9CD1EE7434400CCEC20 /* ElmBridgeTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		843DE9B91EE7434400CCEC20 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				843DE9C51EE7434400CCEC20 /* Assets.xcassets in Resources */,
+				843DE9C81EE7434400CCEC20 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		843DE9CC1EE7434400CCEC20 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		843DE9B71EE7434400CCEC20 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				843DE9DE1EE744CA00CCEC20 /* ChakraProxy.m in Sources */,
+				843DE9C31EE7434400CCEC20 /* main.m in Sources */,
+				843DE9C01EE7434400CCEC20 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		843DE9CA1EE7434400CCEC20 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				843DE9D31EE7434400CCEC20 /* ElmBridgeTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		843DE9D01EE7434400CCEC20 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 843DE9BA1EE7434400CCEC20 /* ElmBridge */;
+			targetProxy = 843DE9CF1EE7434400CCEC20 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		843DE9C61EE7434400CCEC20 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				843DE9C71EE7434400CCEC20 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		843DE9D51EE7434400CCEC20 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		843DE9D61EE7434400CCEC20 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		843DE9D81EE7434400CCEC20 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ElmBridge/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.palmerpaul.ElmBridge;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		843DE9D91EE7434400CCEC20 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ElmBridge/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.palmerpaul.ElmBridge;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		843DE9DB1EE7434400CCEC20 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ElmBridgeTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.palmerpaul.ElmBridgeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ElmBridge.app/Contents/MacOS/ElmBridge";
+			};
+			name = Debug;
+		};
+		843DE9DC1EE7434400CCEC20 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ElmBridgeTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.palmerpaul.ElmBridgeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ElmBridge.app/Contents/MacOS/ElmBridge";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		843DE9B61EE7434400CCEC20 /* Build configuration list for PBXProject "ElmBridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				843DE9D51EE7434400CCEC20 /* Debug */,
+				843DE9D61EE7434400CCEC20 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		843DE9D71EE7434400CCEC20 /* Build configuration list for PBXNativeTarget "ElmBridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				843DE9D81EE7434400CCEC20 /* Debug */,
+				843DE9D91EE7434400CCEC20 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		843DE9DA1EE7434400CCEC20 /* Build configuration list for PBXNativeTarget "ElmBridgeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				843DE9DB1EE7434400CCEC20 /* Debug */,
+				843DE9DC1EE7434400CCEC20 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 843DE9B31EE7434400CCEC20 /* Project object */;
+}
