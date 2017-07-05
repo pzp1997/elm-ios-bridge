@@ -1,0 +1,365 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8413BD561F02A8A400AB46AB /* app.js in Resources */ = {isa = PBXBuildFile; fileRef = 8413BD551F02A8A400AB46AB /* app.js */; };
+		8449C90B1F02956800BF9D59 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449C90A1F02956800BF9D59 /* AppDelegate.swift */; };
+		8449C90D1F02956800BF9D59 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449C90C1F02956800BF9D59 /* ViewController.swift */; };
+		8449C9121F02956800BF9D59 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8449C9111F02956800BF9D59 /* Assets.xcassets */; };
+		8449C91D1F029B3600BF9D59 /* VirtualUIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449C91C1F029B3600BF9D59 /* VirtualUIKit.swift */; };
+		A32B94F14A4F79520EF6D5A3 /* Pods_ElmiOSCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 989CB033A7E8BDDFB9443E91 /* Pods_ElmiOSCore.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		75A79C070E1975FBCAB545E3 /* Pods-ElmiOSCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ElmiOSCore.release.xcconfig"; path = "Pods/Target Support Files/Pods-ElmiOSCore/Pods-ElmiOSCore.release.xcconfig"; sourceTree = "<group>"; };
+		8413BD551F02A8A400AB46AB /* app.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = app.js; sourceTree = "<group>"; };
+		8449C9071F02956800BF9D59 /* ElmiOSCore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ElmiOSCore.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8449C90A1F02956800BF9D59 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		8449C90C1F02956800BF9D59 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		8449C9111F02956800BF9D59 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8449C9161F02956800BF9D59 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8449C91C1F029B3600BF9D59 /* VirtualUIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VirtualUIKit.swift; path = ElmiOSCore/VirtualUIKit.swift; sourceTree = "<group>"; };
+		989CB033A7E8BDDFB9443E91 /* Pods_ElmiOSCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ElmiOSCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A0B1CA80E833BC608D7FEC87 /* Pods-ElmiOSCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ElmiOSCore.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ElmiOSCore/Pods-ElmiOSCore.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8449C9041F02956700BF9D59 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A32B94F14A4F79520EF6D5A3 /* Pods_ElmiOSCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0CE93A24A9D44645D77DA5DC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				A0B1CA80E833BC608D7FEC87 /* Pods-ElmiOSCore.debug.xcconfig */,
+				75A79C070E1975FBCAB545E3 /* Pods-ElmiOSCore.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		78D6A9691A0F28A38362BD3E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				989CB033A7E8BDDFB9443E91 /* Pods_ElmiOSCore.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8449C8FE1F02956700BF9D59 = {
+			isa = PBXGroup;
+			children = (
+				8449C91C1F029B3600BF9D59 /* VirtualUIKit.swift */,
+				8449C9091F02956800BF9D59 /* ElmiOSCore */,
+				8449C9081F02956800BF9D59 /* Products */,
+				0CE93A24A9D44645D77DA5DC /* Pods */,
+				78D6A9691A0F28A38362BD3E /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		8449C9081F02956800BF9D59 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8449C9071F02956800BF9D59 /* ElmiOSCore.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8449C9091F02956800BF9D59 /* ElmiOSCore */ = {
+			isa = PBXGroup;
+			children = (
+				8449C90A1F02956800BF9D59 /* AppDelegate.swift */,
+				8449C90C1F02956800BF9D59 /* ViewController.swift */,
+				8449C9111F02956800BF9D59 /* Assets.xcassets */,
+				8449C9161F02956800BF9D59 /* Info.plist */,
+				8413BD551F02A8A400AB46AB /* app.js */,
+			);
+			path = ElmiOSCore;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8449C9061F02956700BF9D59 /* ElmiOSCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8449C9191F02956800BF9D59 /* Build configuration list for PBXNativeTarget "ElmiOSCore" */;
+			buildPhases = (
+				8DB53A57739DF0DF2BF10182 /* [CP] Check Pods Manifest.lock */,
+				8449C9031F02956700BF9D59 /* Sources */,
+				8449C9041F02956700BF9D59 /* Frameworks */,
+				8449C9051F02956700BF9D59 /* Resources */,
+				8DCD40572321D83B5E6CA3FA /* [CP] Embed Pods Frameworks */,
+				ED3D60B2178226B695349FF4 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ElmiOSCore;
+			productName = ElmiOSCore;
+			productReference = 8449C9071F02956800BF9D59 /* ElmiOSCore.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8449C8FF1F02956700BF9D59 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0820;
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = "Palmer Paul";
+				TargetAttributes = {
+					8449C9061F02956700BF9D59 = {
+						CreatedOnToolsVersion = 8.2.1;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 8449C9021F02956700BF9D59 /* Build configuration list for PBXProject "ElmiOSCore" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 8449C8FE1F02956700BF9D59;
+			productRefGroup = 8449C9081F02956800BF9D59 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8449C9061F02956700BF9D59 /* ElmiOSCore */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8449C9051F02956700BF9D59 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8449C9121F02956800BF9D59 /* Assets.xcassets in Resources */,
+				8413BD561F02A8A400AB46AB /* app.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		8DB53A57739DF0DF2BF10182 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		8DCD40572321D83B5E6CA3FA /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ElmiOSCore/Pods-ElmiOSCore-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		ED3D60B2178226B695349FF4 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ElmiOSCore/Pods-ElmiOSCore-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8449C9031F02956700BF9D59 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8449C91D1F029B3600BF9D59 /* VirtualUIKit.swift in Sources */,
+				8449C90D1F02956800BF9D59 /* ViewController.swift in Sources */,
+				8449C90B1F02956800BF9D59 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		8449C9171F02956800BF9D59 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8449C9181F02956800BF9D59 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8449C91A1F02956800BF9D59 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A0B1CA80E833BC608D7FEC87 /* Pods-ElmiOSCore.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = ElmiOSCore/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.palmerpaul.ElmiOSCore;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		8449C91B1F02956800BF9D59 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 75A79C070E1975FBCAB545E3 /* Pods-ElmiOSCore.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = ElmiOSCore/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.palmerpaul.ElmiOSCore;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8449C9021F02956700BF9D59 /* Build configuration list for PBXProject "ElmiOSCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8449C9171F02956800BF9D59 /* Debug */,
+				8449C9181F02956800BF9D59 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8449C9191F02956800BF9D59 /* Build configuration list for PBXNativeTarget "ElmiOSCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8449C91A1F02956800BF9D59 /* Debug */,
+				8449C91B1F02956800BF9D59 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8449C8FF1F02956700BF9D59 /* Project object */;
+}
