@@ -4,10 +4,6 @@ import JavaScriptCore
 
 
 class VirtualUIKit : NSObject {
-    
-    static let appDelegate : AppDelegate  = UIApplication.shared.delegate as! AppDelegate
-    static let viewController = appDelegate.window!.rootViewController!
-    static let rootView : UIView = viewController.view
 
     static func render(virtualView: [String : Any]) -> UIView? {
         if let tag = virtualView["tag"] as? String, let facts = virtualView["facts"] as? [String : Any] {
@@ -21,29 +17,13 @@ class VirtualUIKit : NSObject {
             default:
                 return nil
             }
-            
-//            if let renderedView = renderedView {
-//                let containerSize: CGSize = rootView.bounds.size
-//                
-//                rootView.backgroundColor = .white
-//                rootView.configureLayout { (layout) in
-//                    layout.isEnabled = true
-//                    layout.width = YGValue(containerSize.width)
-//                    layout.height = YGValue(containerSize.height)
-//                }
-//
-//                rootView.addSubview(renderedView)
-//                rootView.yoga.applyLayout(preservingOrigin: true)
-//                print(renderedView)
-//            }
-            
         }
         return nil
     }
-    
+
     static func renderLabel(facts: [String : Any]) -> UILabel {
         let label: UILabel = UILabel()
-        
+
         if let text = facts["text"] as? String {
             label.text = text
         }
@@ -52,46 +32,45 @@ class VirtualUIKit : NSObject {
         if let textColor = facts["textColor"] as? String, let color = extractColor(textColor) {
             label.textColor = color
         }
-        
+
         // textAlignment
         if let textAlignment = facts["textAlignment"] as? String {
             // TODO store textAlignment as an Int in JSON and use rawValue
             label.textAlignment = extractTextAlignment(textAlignment)
         }
-        
+
         // font
         if let font = facts["font"] as? String {
             label.font = UIFont(name: font, size: facts["fontSize"] as? CGFloat ?? UIFont.systemFontSize)
         } else if let fontSize = facts["fontSize"] as? CGFloat {
             label.font = UIFont.systemFont(ofSize: fontSize)
         }
-        
+
         // numberOfLines
         if let numberOfLines = facts["numberOfLines"] as? Int {
             label.numberOfLines = numberOfLines
         }
-        
+
         // lineBreakMode
         if let lineBreakMode = facts["lineBreakMode"] as? String {
             // TODO store lineBreakMode as an Int in JSON and use rawValue
             label.lineBreakMode = extractLineBreakMode(lineBreakMode)
         }
-        
+
         // isEnabled
         if let isEnabled = facts["isEnabled"] as? Bool {
             label.isEnabled = isEnabled
         }
-        
+
         // highlight
         if let isHighlighted = facts["isHighlighted"] as? Bool {
             label.isHighlighted = isHighlighted
         }
-        
+
         if let highlightedTextColor = facts["highlightedTextColor"] as? String, let color = extractColor(highlightedTextColor) {
             label.highlightedTextColor = color
         }
-        
-        
+
         // shadow
         if let shadowColor = facts["shadowColor"] as? String, let color = extractColor(shadowColor) {
             label.shadowColor = color
@@ -99,34 +78,30 @@ class VirtualUIKit : NSObject {
                 label.shadowOffset = CGSize(width: shadowOffsetX, height: shadowOffsetY)
             }
         }
-        
 
         applyYogaFacts(view: label, facts: facts)
-        
-        // general
-        // applyGeneralFacts(view: label, facts: facts, type: .label)
-        
+
         return label
     }
-    
+
     static func renderView(facts: [String : Any], children: [[String : Any]]) -> UIView {
         let view: UIView = UIView()
-        
+
         if let backgroundColor = facts["backgroundColor"] as? String {
             view.backgroundColor = extractColor(backgroundColor)
         }
-        
+
         applyYogaFacts(view: view, facts: facts)
-        
+
         for child in children {
             if let renderedChild = render(virtualView: child) {
                 view.addSubview(renderedChild)
             }
         }
-        
+
         return view
     }
-    
+
     static func extractTextAlignment(_ alignment: String) -> NSTextAlignment {
         switch alignment {
         case "left":
@@ -143,7 +118,7 @@ class VirtualUIKit : NSObject {
             return .left
         }
     }
-    
+
     static func extractColor(_ color: String) -> UIColor? {
         switch color {
             case "red":
@@ -174,7 +149,7 @@ class VirtualUIKit : NSObject {
                 return nil
         }
     }
-    
+
     static func extractLineBreakMode(_ lbM: String) -> NSLineBreakMode {
         switch lbM {
         case "":
@@ -193,7 +168,7 @@ class VirtualUIKit : NSObject {
             return .byTruncatingTail
         }
     }
-    
+
     static func extractFlexDirection(_ direction: String) -> YGFlexDirection {
         switch direction {
         case "row":
@@ -208,7 +183,7 @@ class VirtualUIKit : NSObject {
             return .column
         }
     }
-    
+
     static func extractJustify(_ justify: String) -> YGJustify {
         switch justify {
         case "flexStart":
@@ -225,7 +200,7 @@ class VirtualUIKit : NSObject {
             return .flexStart
         }
     }
-    
+
     static func extractWrap(_ wrap: String) -> YGWrap {
         switch wrap {
         case "noWrap":
@@ -238,7 +213,7 @@ class VirtualUIKit : NSObject {
             return .noWrap
         }
     }
-    
+
     static func extractAlign(_ align: String) -> YGAlign? {
         switch align {
         case "stretch":
@@ -253,7 +228,7 @@ class VirtualUIKit : NSObject {
             return nil
         }
     }
-    
+
     static func extractTextDirection(_ direction: String) -> YGDirection {
         switch direction {
         case "inherit":
@@ -266,7 +241,7 @@ class VirtualUIKit : NSObject {
             return .inherit
         }
     }
-    
+
     static func applyYogaFacts(view: UIView, facts: [String : Any]) {
         view.configureLayout { (layout) in
             layout.isEnabled = true
@@ -287,41 +262,41 @@ class VirtualUIKit : NSObject {
                         layout.flexDirection = extractFlexDirection(value)
                     }
                     break
-                    
+
                 case "justifyContent":
                     if let value = facts[key] as? String {
                         // TODO store justifyContent as an Int in JSON and use rawValue
                         layout.justifyContent = extractJustify(value)
                     }
                     break
-                
+
                 case "flexWrap":
                     if let value = facts[key] as? String {
                         // TODO store flexWrap as an Int in JSON and use rawValue
                         layout.flexWrap = extractWrap(value)
                     }
                     break
-                    
+
                 case "alignItems":
                     if let value = facts[key] as? String {
                         // TODO store alignItems as an Int in JSON and use rawValue
                         layout.alignItems = extractAlign(value) ?? .stretch
                     }
                     break
-                
+
                 case "alignContent":
                     if let value = facts[key] as? String {
                         // TODO store alignContent as an Int in JSON and use rawValue
                         layout.alignContent = extractAlign(value) ?? .flexStart
                     }
                     break
-                    
+
                 case "direction":
                     if let value = facts[key] as? String {
                         layout.direction = extractTextDirection(value)
                     }
 
-                    
+
                 // Other properties
 
                 case "alignSelf":
@@ -336,10 +311,10 @@ class VirtualUIKit : NSObject {
                         layout.position = .absolute
                     }
                     break
-                
-                    
+
+
                 // YGValue
-                    
+
                 case "flexBasis":
                     if let value = facts[key] as? Float {
                         layout.flexBasis = YGValue(value)
@@ -376,7 +351,7 @@ class VirtualUIKit : NSObject {
                         layout.end = YGValue(value)
                     }
                     break
-                    
+
                 case "minWidth":
                     if let value = facts[key] as? Float {
                         layout.minWidth = YGValue(value)
@@ -397,7 +372,7 @@ class VirtualUIKit : NSObject {
                         layout.maxHeight = YGValue(value)
                     }
                     break
-                    
+
                 case "width":
                     if let value = facts[key] as? Float {
                         layout.width = YGValue(value)
@@ -408,7 +383,7 @@ class VirtualUIKit : NSObject {
                         layout.height = YGValue(value)
                     }
                     break
-                    
+
                 case "margin":
                     if let value = facts[key] as? Float {
                         layout.margin = YGValue(value)
@@ -501,13 +476,13 @@ class VirtualUIKit : NSObject {
                     }
                     break
 
-                
+
                 // CGFloat
-                
+
                 case "flexGrow":
                     if let value = facts[key] as? Float {
-                        layout.setValue(CGFloat(value), forKey: key)
-//                        layout.flexGrow = CGFloat(value)
+//                        layout.setValue(CGFloat(value), forKey: key)
+                        layout.flexGrow = CGFloat(value)
                     }
                 case "flexShrink":
                     if let value = facts[key] as? Float {
@@ -554,69 +529,6 @@ class VirtualUIKit : NSObject {
                 }
             }
         }
-//
-//        if let isEnabled = facts.removeValue(forKey: "yogaEnabled") as? Bool {
-//            view.yoga.isEnabled = isEnabled
-//        } else {
-//            view.yoga.isEnabled = true
-//        }
-//        
-        // Absolute positioning
-        
-//        if let position = facts.removeValue(forKey: "position") as? String {
-//            if position == "absolute" {
-//                view.yoga.position = .absolute
-//            }
-//        }
-        
-//        if let left = facts.removeValue(forKey: "left") as? YGValue {
-//            view.yoga.left = left
-//        }
-        
-//        if let top = facts.removeValue(forKey: "top") as? YGValue {
-//            view.yoga.top = top
-//        }
-//        
-//        if let right = facts.removeValue(forKey: "right") as? YGValue {
-//            view.yoga.right = right
-//        }
-//        
-//        if let bottom = facts.removeValue(forKey: "bottom") as? YGValue {
-//            view.yoga.bottom = bottom
-//        }
-//
-//        if let start = facts.removeValue(forKey: "start") as? YGValue {
-//            view.yoga.start = start
-//        }
-//        
-//        if let end = facts.removeValue(forKey: "end") as? YGValue {
-//            view.yoga.end = end
-//        }
     }
-    
-//    static func applyGeneralFacts(view: UIView, facts: [String : String], type: Component) {
-//        for (key, value) in facts {
-//            switch key {
-//                case "
-//                default:
-//                    break
-//            }
-//        }
-//    }
-
 }
 
-enum Component {
-    case label
-    case button
-    case slider
-    case view
-}
-
-
-//protocol VirtualUIKitExports : JSExport {
-//    static func render(virtualView: [String : Any])
-//}
-//
-//extension VirtualUIKit : VirtualUIKitExports
-//{}
