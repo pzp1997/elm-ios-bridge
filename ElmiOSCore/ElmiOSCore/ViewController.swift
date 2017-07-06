@@ -10,25 +10,7 @@ class ViewController: UIViewController {
         // patch context
 
         let initialRender: @convention(block) ([String : Any]) -> Void = { (view) in
-            if let renderedView = VirtualUIKit.render(virtualView: view) {
-                let containerSize: CGSize = self.view.bounds.size
-                
-                let root = self.view!
-                root.backgroundColor = .white
-                root.configureLayout { (layout) in
-                    layout.isEnabled = true
-                    layout.width = YGValue(containerSize.width)
-                    layout.height = YGValue(containerSize.height)
-                }
-                
-                root.addSubview(renderedView)
-                root.yoga.applyLayout(preservingOrigin: true)
-                
-                VirtualUIKit.rootView = renderedView
-                
-                // DEBUG
-                print(renderedView)
-            }
+            VirtualUIKit.initialRender(view: view)
         }
         context.setObject(initialRender, forKeyedSubscript: "initialRender" as (NSCopying & NSObjectProtocol)!)
 
@@ -67,7 +49,22 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         self.window = UIWindow(frame: UIScreen.main.bounds)
         
+        let containerSize: CGSize = self.view.bounds.size
+        
+        let root = self.view!
+        root.backgroundColor = .white
+        root.configureLayout { (layout) in
+            layout.isEnabled = true
+            layout.width = YGValue(containerSize.width)
+            layout.height = YGValue(containerSize.height)
+        }
+        
         _ = jsContext?.objectForKeyedSubscript("ready").call(withArguments: [])
+    }
+    
+    func addToRootView(subview: UIView) {
+        self.view.addSubview(subview)
+        self.view.yoga.applyLayout(preservingOrigin: true)
     }
 
 }

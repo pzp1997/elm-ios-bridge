@@ -6,6 +6,11 @@ import JavaScriptCore
 class VirtualUIKit : NSObject {
     
     static var rootView : UIView? = nil
+    static let viewController : ViewController = {
+        let window = UIApplication.shared.keyWindow!
+        let navigationController = window.rootViewController as! UINavigationController
+        return navigationController.viewControllers.first as! ViewController
+    }()
     
     /* APPLY PATCHES */
     
@@ -71,6 +76,13 @@ class VirtualUIKit : NSObject {
     }
 
     /* RENDER */
+    
+    static func initialRender(view: [String : Any]) {
+        if let renderedView = render(virtualView: view) {
+            rootView = renderedView
+            viewController.addToRootView(subview: renderedView)
+        }
+    }
 
     static func render(virtualView: [String : Any]) -> UIView? {
         if let tag = virtualView["tag"] as? String, let facts = virtualView["facts"] as? [String : Any] {
