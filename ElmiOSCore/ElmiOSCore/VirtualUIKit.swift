@@ -48,23 +48,23 @@ class VirtualUIKit : NSObject {
     /* ADD UIKIT NODES TO PATCHES */
 
     
-    static func addUIKitNodesRecursive(view: UIView, patch: inout [String : Any]) {
-        if let cons = patch["cons"] as? String, cons != "change", let index = patch["index"] as? Int, let patches = patch["patches"] as? [[String : Any]] {
-            let subview = view.subviews[index]
-            for var p in patches {
-                addUIKitNodesRecursive(view: subview, patch: &p)
-            }
-        } else {
-            patch["node"] = view
-        }
-    }
+//    static func addUIKitNodesRecursive(view: UIView, patch: inout [String : Any]) {
+//        if let ctor = patch["ctor"] as? String, ctor != "change", let index = patch["index"] as? Int, let patches = patch["patches"] as? [[String : Any]] {
+//            let subview = view.subviews[index]
+//            for var p in patches {
+//                addUIKitNodesRecursive(view: subview, patch: &p)
+//            }
+//        } else {
+//            patch["node"] = view
+//        }
+//    }
     
     static func addUIKitNodes(rootView: UIView, patches: [String : Any]) -> [[String : Any]] {
         var queue : [([String : Any], UIView)] = [(patches, rootView)]
         var patchList : [[String : Any]] = []
         while !queue.isEmpty {
             var (patch, view) = queue.removeLast()
-            if let cons = patch["cons"] as? String, cons == "at", let index = patch["index"] as? Int, let patches = patch["patches"] as? [[String : Any]] {
+            if let ctor = patch["ctor"] as? String, ctor != "change", let index = patch["index"] as? Int, let patches = patch["patches"] as? [[String : Any]] {
                 let subview = view.subviews[index]
                 queue.append(contentsOf: patches.map { ($0, subview) })
             } else {

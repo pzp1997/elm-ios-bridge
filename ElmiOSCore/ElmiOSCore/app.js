@@ -1,16 +1,16 @@
 function ready() {
     consoleLog("ready called!");
-
-//    var label = {
-//        "tag": "label",
-//        "facts": {
-//            "text": "hello world!",
-//            "textColor": "red",
-//            "position": "absolute",
-//            "top": 200,
-//            "left": 200
-//        }
-//    };
+    
+    //    var label = {
+    //        "tag": "label",
+    //        "facts": {
+    //            "text": "hello world!",
+    //            "textColor": "red",
+    //            "position": "absolute",
+    //            "top": 200,
+    //            "left": 200
+    //        }
+    //    };
     
     var helloLabel = {
         tag: "label",
@@ -49,10 +49,21 @@ function ready() {
         },
         children: [helloLabel, elmLabel]
     };
+    
+    var redrawPatch = {
+        ctor: "at",
+        index: 0,
+        patches: [{
+            ctor: "change",
+            type: "redraw",
+            data: elmLabel,
+            node: null
+        }]
+    };
 
-    consoleLog("calling render");
-    
     initialRender(column);
+    consoleLog("called initialRender");
     
-    consoleLog("render was called");
+    applyPatches(redrawPatch);
+    consoleLog("called applyPatches");
 }

@@ -13,6 +13,12 @@ class ViewController: UIViewController {
             VirtualUIKit.initialRender(view: view)
         }
         context.setObject(initialRender, forKeyedSubscript: "initialRender" as (NSCopying & NSObjectProtocol)!)
+        
+        let applyPatches: @convention(block) ([String : Any]) -> Void = { (patches) in
+            VirtualUIKit.applyPatches(patches)
+        }
+        context.setObject(applyPatches, forKeyedSubscript: "applyPatches" as (NSCopying & NSObjectProtocol)!)
+
 
         // console
 
