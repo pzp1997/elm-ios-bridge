@@ -4,6 +4,73 @@ import JavaScriptCore
 
 
 class VirtualUIKit : NSObject {
+    
+    static var rootView : UIView? = nil
+    
+    /* APPLY PATCHES */
+    
+    static func applyPatches(_ patches: [String : Any]) {
+        // TODO consider handling patches to root node seperately
+        if let view = rootView {
+            let patchList = addUIKitNodes(rootView: view, patches: patches)
+            for patch in patchList {
+                applyPatch(patch)
+            }
+        }
+    }
+    
+    static func applyPatch(_ patch: [String : Any]) {
+        if let type = patch["type"] as? String, let node = patch["node"] as? UIView {
+            switch type {
+            case "redraw":
+                if let virtualNode = patch["data"] as? [String : Any ], let newNode = render(virtualView: virtualNode) {
+                    if let parent = node.superview {
+                        replaceSubview(parent: parent, old: node, new: newNode)
+                        parent.yoga.applyLayout(preservingOrigin: true)
+                    }
+                }
+            default:
+                return
+            }
+        }
+    }
+    
+    static func replaceSubview(parent: UIView, old: UIView, new: UIView) {
+        parent.insertSubview(new, belowSubview: old)
+        old.removeFromSuperview()
+    }
+    
+    /* ADD UIKIT NODES TO PATCHES */
+
+    
+    static func addUIKitNodesRecursive(view: UIView, patch: inout [String : Any]) {
+        if let cons = patch["cons"] as? String, cons != "change", let index = patch["index"] as? Int, let patches = patch["patches"] as? [[String : Any]] {
+            let subview = view.subviews[index]
+            for var p in patches {
+                addUIKitNodesRecursive(view: subview, patch: &p)
+            }
+        } else {
+            patch["node"] = view
+        }
+    }
+    
+    static func addUIKitNodes(rootView: UIView, patches: [String : Any]) -> [[String : Any]] {
+        var queue : [([String : Any], UIView)] = [(patches, rootView)]
+        var patchList : [[String : Any]] = []
+        while !queue.isEmpty {
+            var (patch, view) = queue.removeLast()
+            if let cons = patch["cons"] as? String, cons == "at", let index = patch["index"] as? Int, let patches = patch["patches"] as? [[String : Any]] {
+                let subview = view.subviews[index]
+                queue.append(contentsOf: patches.map { ($0, subview) })
+            } else {
+                patch["node"] = view
+                patchList.append(patch)
+            }
+        }
+        return patchList
+    }
+
+    /* RENDER */
 
     static func render(virtualView: [String : Any]) -> UIView? {
         if let tag = virtualView["tag"] as? String, let facts = virtualView["facts"] as? [String : Any] {

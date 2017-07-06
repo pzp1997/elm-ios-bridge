@@ -24,6 +24,8 @@ class ViewController: UIViewController {
                 root.addSubview(renderedView)
                 root.yoga.applyLayout(preservingOrigin: true)
                 
+                VirtualUIKit.rootView = renderedView
+                
                 // DEBUG
                 print(renderedView)
             }
