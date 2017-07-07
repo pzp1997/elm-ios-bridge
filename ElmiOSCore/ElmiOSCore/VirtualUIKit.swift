@@ -4,16 +4,19 @@ import JavaScriptCore
 
 
 class VirtualUIKit : NSObject {
-    
+
     static var rootView : UIView? = nil
     static let viewController : ViewController = {
         let window = UIApplication.shared.keyWindow!
         let navigationController = window.rootViewController as! UINavigationController
         return navigationController.viewControllers.first as! ViewController
     }()
-    
+
+
+
     /* APPLY PATCHES */
     
+
     static func applyPatches(_ patches: [String : Any]) {
         // TODO consider handling patches to root node seperately
         if let view = rootView {
@@ -23,7 +26,7 @@ class VirtualUIKit : NSObject {
             }
         }
     }
-    
+
     static func applyPatch(_ patch: [String : Any]) {
         if let type = patch["type"] as? String, let node = patch["node"] as? UIView {
             switch type {
@@ -39,15 +42,17 @@ class VirtualUIKit : NSObject {
             }
         }
     }
-    
+
     static func replaceSubview(parent: UIView, old: UIView, new: UIView) {
         parent.insertSubview(new, belowSubview: old)
         old.removeFromSuperview()
     }
-    
+
+
+
     /* ADD UIKIT NODES TO PATCHES */
 
-    
+
 //    static func addUIKitNodesRecursive(view: UIView, patch: inout [String : Any]) {
 //        if let ctor = patch["ctor"] as? String, ctor != "change", let index = patch["index"] as? Int, let patches = patch["patches"] as? [[String : Any]] {
 //            let subview = view.subviews[index]
@@ -58,7 +63,7 @@ class VirtualUIKit : NSObject {
 //            patch["node"] = view
 //        }
 //    }
-    
+
     static func addUIKitNodes(rootView: UIView, patches: [String : Any]) -> [[String : Any]] {
         var queue : [([String : Any], UIView)] = [(patches, rootView)]
         var patchList : [[String : Any]] = []
@@ -75,8 +80,11 @@ class VirtualUIKit : NSObject {
         return patchList
     }
 
+
+
     /* RENDER */
-    
+
+
     static func initialRender(view: [String : Any]) {
         if let renderedView = render(virtualView: view) {
             rootView = renderedView
@@ -102,7 +110,35 @@ class VirtualUIKit : NSObject {
 
     static func renderLabel(facts: [String : Any]) -> UILabel {
         let label: UILabel = UILabel()
+        
+        applyLabelFacts(label: label, facts: facts)
+        applyYogaFacts(view: label, facts: facts)
 
+        return label
+    }
+
+    static func renderView(facts: [String : Any], children: [[String : Any]]) -> UIView {
+        let view: UIView = UIView()
+
+        applyViewFacts(view: view, facts: facts)
+        applyYogaFacts(view: view, facts: facts)
+
+        for child in children {
+            if let renderedChild = render(virtualView: child) {
+                view.addSubview(renderedChild)
+            }
+        }
+
+        return view
+    }
+
+
+
+    /* APPLY FACTS */
+
+
+    static func applyLabelFacts(label: UILabel, facts: [String: Any]) {
+        // text
         if let text = facts["text"] as? String {
             label.text = text
         }
@@ -157,167 +193,11 @@ class VirtualUIKit : NSObject {
                 label.shadowOffset = CGSize(width: shadowOffsetX, height: shadowOffsetY)
             }
         }
-
-        applyYogaFacts(view: label, facts: facts)
-
-        return label
     }
 
-    static func renderView(facts: [String : Any], children: [[String : Any]]) -> UIView {
-        let view: UIView = UIView()
-
+    static func applyViewFacts(view: UIView, facts: [String : Any]) {
         if let backgroundColor = facts["backgroundColor"] as? String {
             view.backgroundColor = extractColor(backgroundColor)
-        }
-
-        applyYogaFacts(view: view, facts: facts)
-
-        for child in children {
-            if let renderedChild = render(virtualView: child) {
-                view.addSubview(renderedChild)
-            }
-        }
-
-        return view
-    }
-
-    static func extractTextAlignment(_ alignment: String) -> NSTextAlignment {
-        switch alignment {
-        case "left":
-            return .left
-        case "right":
-            return .right
-        case "center":
-            return .center
-        case "justified":
-            return .justified
-        case "natural":
-            return .natural
-        default:
-            return .left
-        }
-    }
-
-    static func extractColor(_ color: String) -> UIColor? {
-        switch color {
-            case "red":
-                return .red
-            case "orange":
-                return .orange
-            case "yellow":
-                return .yellow
-            case "green":
-                return .green
-            case "cyan":
-                return .cyan
-            case "blue":
-                return .blue
-            case "magenta":
-                return .magenta
-            case "purple":
-                return .purple
-            case "white":
-                return .white
-            case "gray":
-                return .gray
-            case "black":
-                return .black
-            case "brown":
-                return .brown
-            default:
-                return nil
-        }
-    }
-
-    static func extractLineBreakMode(_ lbM: String) -> NSLineBreakMode {
-        switch lbM {
-        case "":
-            return .byWordWrapping
-        case "":
-            return .byCharWrapping
-        case "":
-            return .byClipping
-        case "":
-            return .byTruncatingHead
-        case "":
-            return .byTruncatingTail
-        case "":
-            return .byTruncatingMiddle
-        default:
-            return .byTruncatingTail
-        }
-    }
-
-    static func extractFlexDirection(_ direction: String) -> YGFlexDirection {
-        switch direction {
-        case "row":
-            return .row
-        case "colum":
-            return .column
-        case "rowReverse":
-            return .rowReverse
-        case "columnReverse":
-            return .columnReverse
-        default:
-            return .column
-        }
-    }
-
-    static func extractJustify(_ justify: String) -> YGJustify {
-        switch justify {
-        case "flexStart":
-            return .flexStart
-        case "flexEnd":
-            return .flexEnd
-        case "center":
-            return .center
-        case "spaceBetween":
-            return .spaceBetween
-        case "spaceAround":
-            return .spaceAround
-        default:
-            return .flexStart
-        }
-    }
-
-    static func extractWrap(_ wrap: String) -> YGWrap {
-        switch wrap {
-        case "noWrap":
-            return .noWrap
-        case "wrap":
-            return .wrap
-        case "wrapReverse":
-            return .wrapReverse
-        default:
-            return .noWrap
-        }
-    }
-
-    static func extractAlign(_ align: String) -> YGAlign? {
-        switch align {
-        case "stretch":
-            return .stretch
-        case "flexStart":
-            return .flexStart
-        case "flexEnd":
-            return .flexEnd
-        case "center":
-            return .center
-        default:
-            return nil
-        }
-    }
-
-    static func extractTextDirection(_ direction: String) -> YGDirection {
-        switch direction {
-        case "inherit":
-            return .inherit
-        case "LTR":
-            return .LTR
-        case "RTL":
-            return .RTL
-        default:
-            return .inherit
         }
     }
 
@@ -609,5 +489,151 @@ class VirtualUIKit : NSObject {
             }
         }
     }
+
+
+
+    /* EXTRACT PROPERTY VALUES */
+
+
+    static func extractTextAlignment(_ alignment: String) -> NSTextAlignment {
+        switch alignment {
+        case "left":
+            return .left
+        case "right":
+            return .right
+        case "center":
+            return .center
+        case "justified":
+            return .justified
+        case "natural":
+            return .natural
+        default:
+            return .left
+        }
+    }
+
+    static func extractColor(_ color: String) -> UIColor? {
+        switch color {
+        case "red":
+            return .red
+        case "orange":
+            return .orange
+        case "yellow":
+            return .yellow
+        case "green":
+            return .green
+        case "cyan":
+            return .cyan
+        case "blue":
+            return .blue
+        case "magenta":
+            return .magenta
+        case "purple":
+            return .purple
+        case "white":
+            return .white
+        case "gray":
+            return .gray
+        case "black":
+            return .black
+        case "brown":
+            return .brown
+        default:
+            return nil
+        }
+    }
+
+    static func extractLineBreakMode(_ lbM: String) -> NSLineBreakMode {
+        switch lbM {
+        case "":
+            return .byWordWrapping
+        case "":
+            return .byCharWrapping
+        case "":
+            return .byClipping
+        case "":
+            return .byTruncatingHead
+        case "":
+            return .byTruncatingTail
+        case "":
+            return .byTruncatingMiddle
+        default:
+            return .byTruncatingTail
+        }
+    }
+
+    static func extractFlexDirection(_ direction: String) -> YGFlexDirection {
+        switch direction {
+        case "row":
+            return .row
+        case "colum":
+            return .column
+        case "rowReverse":
+            return .rowReverse
+        case "columnReverse":
+            return .columnReverse
+        default:
+            return .column
+        }
+    }
+
+    static func extractJustify(_ justify: String) -> YGJustify {
+        switch justify {
+        case "flexStart":
+            return .flexStart
+        case "flexEnd":
+            return .flexEnd
+        case "center":
+            return .center
+        case "spaceBetween":
+            return .spaceBetween
+        case "spaceAround":
+            return .spaceAround
+        default:
+            return .flexStart
+        }
+    }
+
+    static func extractWrap(_ wrap: String) -> YGWrap {
+        switch wrap {
+        case "noWrap":
+            return .noWrap
+        case "wrap":
+            return .wrap
+        case "wrapReverse":
+            return .wrapReverse
+        default:
+            return .noWrap
+        }
+    }
+
+    static func extractAlign(_ align: String) -> YGAlign? {
+        switch align {
+        case "stretch":
+            return .stretch
+        case "flexStart":
+            return .flexStart
+        case "flexEnd":
+            return .flexEnd
+        case "center":
+            return .center
+        default:
+            return nil
+        }
+    }
+
+    static func extractTextDirection(_ direction: String) -> YGDirection {
+        switch direction {
+        case "inherit":
+            return .inherit
+        case "LTR":
+            return .LTR
+        case "RTL":
+            return .RTL
+        default:
+            return .inherit
+        }
+    }
+
 }
 
