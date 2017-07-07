@@ -17,7 +17,7 @@ class VirtualUIKit : NSObject {
     /* APPLY PATCHES */
     
 
-    static func applyPatches(_ patches: [String : Any]) {
+    static func applyPatches(_ patches: [[String : Any]]) {
         // TODO consider handling patches to root node seperately
         if let view = rootView {
             let patchList = addUIKitNodes(rootView: view, patches: patches)
@@ -31,11 +31,15 @@ class VirtualUIKit : NSObject {
         if let type = patch["type"] as? String, let node = patch["node"] as? UIView {
             switch type {
             case "redraw":
-                if let virtualNode = patch["data"] as? [String : Any ], let newNode = render(virtualView: virtualNode) {
+                if let virtualNode = patch["data"] as? [String : Any], let newNode = render(virtualView: virtualNode) {
                     if let parent = node.superview {
                         replaceSubview(parent: parent, old: node, new: newNode)
                         parent.yoga.applyLayout(preservingOrigin: true)
                     }
+                }
+            case "facts":
+                if let data = patch["data"] as? [String : Any], let tag = data["tag"] as? String, let facts = data["facts"] as? [String : Any] {
+                    applyFacts(view: node, facts: facts, tag: tag)
                 }
             default:
                 return
@@ -64,8 +68,9 @@ class VirtualUIKit : NSObject {
 //        }
 //    }
 
-    static func addUIKitNodes(rootView: UIView, patches: [String : Any]) -> [[String : Any]] {
-        var queue : [([String : Any], UIView)] = [(patches, rootView)]
+    static func addUIKitNodes(rootView: UIView, patches: [[String : Any]]) -> [[String : Any]] {
+        // TODO consider if order of applying patches is important
+        var queue : [([String : Any], UIView)] = patches.map { ($0, rootView ) }
         var patchList : [[String : Any]] = []
         while !queue.isEmpty {
             var (patch, view) = queue.removeLast()
@@ -110,18 +115,14 @@ class VirtualUIKit : NSObject {
 
     static func renderLabel(facts: [String : Any]) -> UILabel {
         let label: UILabel = UILabel()
-        
-        applyLabelFacts(label: label, facts: facts)
-        applyYogaFacts(view: label, facts: facts)
-
+        applyFacts(view: label, facts: facts, tag: "label")
         return label
     }
 
     static func renderView(facts: [String : Any], children: [[String : Any]]) -> UIView {
         let view: UIView = UIView()
 
-        applyViewFacts(view: view, facts: facts)
-        applyYogaFacts(view: view, facts: facts)
+        applyFacts(view: view, facts: facts, tag: "view")
 
         for child in children {
             if let renderedChild = render(virtualView: child) {
@@ -136,6 +137,24 @@ class VirtualUIKit : NSObject {
 
     /* APPLY FACTS */
 
+    static func applyFacts(view: UIView, facts: [String : Any], tag: String) {
+        switch tag {
+        case "label":
+            applyLabelFacts(label: view as! UILabel, facts: facts)
+            break
+        case "view":
+            applyViewFacts(view: view, facts: facts)
+            break
+        default:
+            break
+        }
+        
+//        applyYogaFacts(view: view, facts: facts)
+
+        if let yogaFacts = facts["YOGA"] as? [String : Any] {
+            applyYogaFacts(view: view, facts: yogaFacts)
+        }
+    }
 
     static func applyLabelFacts(label: UILabel, facts: [String: Any]) {
         // text
@@ -207,11 +226,11 @@ class VirtualUIKit : NSObject {
 
             for key in facts.keys {
                 switch key {
-                case "yogaEnabled":
-                    if let value = facts[key] as? Bool {
-                        layout.isEnabled = value
-                    }
-                    break
+//                case "yogaEnabled":
+//                    if let value = facts[key] as? Bool {
+//                        layout.isEnabled = value
+//                    }
+//                    break
 
                 // Container properties
 

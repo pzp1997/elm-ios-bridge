@@ -20,9 +20,10 @@ function ready() {
             shadowColor: "brown",
             shadowOffsetX: 0,
             shadowOffsetY: -3,
-            isHighlighted: true,
             fontSize: 28,
-            margin: 20
+            YOGA: {
+                margin: 20
+            }
         }
     };
     
@@ -32,19 +33,23 @@ function ready() {
             text: "I am the skeleton of Elm for iOS :)",
             font: "Times",
             numberOfLines: 3,
-            width: 100,
             textColor: "blue",
-            margin: 20
+            YOGA: {
+                width: 100,
+                margin: 20
+            }
         }
     }
     
     var column = {
         tag: "view",
         facts: {
-            flexDirection: "column",
-            flexGrow: 1,
-            justifyContent: "center",
-            alignItems: "center",
+            YOGA: {
+                flexDirection: "column",
+                flexGrow: 1,
+                justifyContent: "center",
+                alignItems: "center"
+            },
             backgroundColor: "yellow"
         },
         children: [helloLabel, elmLabel]
@@ -64,6 +69,6 @@ function ready() {
     initialRender(column);
     consoleLog("called initialRender");
     
-    applyPatches(redrawPatch);
+    applyPatches([redrawPatch]);
     consoleLog("called applyPatches");
 }
