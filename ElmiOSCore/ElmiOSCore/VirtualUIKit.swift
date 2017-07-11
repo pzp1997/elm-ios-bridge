@@ -24,6 +24,9 @@ class VirtualUIKit : NSObject {
             for patch in patchList {
                 applyPatch(patch)
             }
+            if !patchList.isEmpty, let root = rootView {
+                root.yoga.applyLayout(preservingOrigin: true)
+            }
         }
     }
 
@@ -34,12 +37,30 @@ class VirtualUIKit : NSObject {
                 if let virtualNode = patch["data"] as? [String : Any], let newNode = render(virtualView: virtualNode) {
                     if let parent = node.superview {
                         replaceSubview(parent: parent, old: node, new: newNode)
-                        parent.yoga.applyLayout(preservingOrigin: true)
+//                        parent.yoga.applyLayout(preservingOrigin: true)
                     }
                 }
             case "facts":
                 if let data = patch["data"] as? [String : Any], let tag = data["tag"] as? String, let facts = data["facts"] as? [String : Any] {
                     applyFacts(view: node, facts: facts, tag: tag)
+                }
+            case "append":
+                if let children = patch["data"] as? [[String : Any]] {
+                    for virtualChild in children {
+                        if let child = render(virtualView: virtualChild) {
+                            node.addSubview(child)
+                        }
+                    }
+                }
+            case "remove-last":
+                if var amount = patch["data"] as? Int {
+                    let subviews : [UIView] = node.subviews
+                    let subviewsLength = subviews.count
+                    amount = min(amount, subviewsLength)
+                    while amount > 0 {
+                        subviews[subviewsLength - amount].removeFromSuperview()
+                        amount -= 1;
+                    }
                 }
             default:
                 return
@@ -56,32 +77,26 @@ class VirtualUIKit : NSObject {
 
     /* ADD UIKIT NODES TO PATCHES */
 
-
-//    static func addUIKitNodesRecursive(view: UIView, patch: inout [String : Any]) {
-//        if let ctor = patch["ctor"] as? String, ctor != "change", let index = patch["index"] as? Int, let patches = patch["patches"] as? [[String : Any]] {
-//            let subview = view.subviews[index]
-//            for var p in patches {
-//                addUIKitNodesRecursive(view: subview, patch: &p)
-//            }
-//        } else {
-//            patch["node"] = view
-//        }
-//    }
-
+    // TODO don't flatten the tree. get rid of stack in favor of recursion.
     static func addUIKitNodes(rootView: UIView, patches: [[String : Any]]) -> [[String : Any]] {
-        // TODO consider if order of applying patches is important
-        var queue : [([String : Any], UIView)] = patches.map { ($0, rootView ) }
         var patchList : [[String : Any]] = []
-        while !queue.isEmpty {
-            var (patch, view) = queue.removeLast()
+
+        var stack : [([String : Any], UIView)] = []
+        for patch in patches.reversed() {
+            stack.append((patch, rootView))
+        }
+    
+        while !stack.isEmpty {
+            var (patch, view) = stack.removeLast()
             if let ctor = patch["ctor"] as? String, ctor != "change", let index = patch["index"] as? Int, let patches = patch["patches"] as? [[String : Any]] {
                 let subview = view.subviews[index]
-                queue.append(contentsOf: patches.map { ($0, subview) })
+                stack.append(contentsOf: patches.map { ($0, subview) }.reversed())
             } else {
                 patch["node"] = view
                 patchList.append(patch)
             }
         }
+
         return patchList
     }
 
@@ -181,9 +196,9 @@ class VirtualUIKit : NSObject {
         }
 
         // numberOfLines
-        if let numberOfLines = facts["numberOfLines"] as? Int {
-            label.numberOfLines = numberOfLines
-        }
+        let numberOfLines = (facts["numberOfLines"] as? Int) ?? 1
+        print(numberOfLines)
+        label.numberOfLines = numberOfLines
 
         // lineBreakMode
         if let lineBreakMode = facts["lineBreakMode"] as? String {
@@ -285,7 +300,7 @@ class VirtualUIKit : NSObject {
                     break
 
                 case "position":
-                    if let value = facts[key] as? String, value == "absolute" {
+                    if let value = facts[key] as? String, value != "relative" {
                         layout.position = .absolute
                     }
                     break

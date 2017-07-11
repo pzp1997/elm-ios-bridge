@@ -32,7 +32,7 @@ function ready() {
         facts: {
             text: "I am the skeleton of Elm for iOS :)",
             font: "Times",
-            numberOfLines: 3,
+            numberOfLines: 2,
             textColor: "blue",
             YOGA: {
                 width: 100,
@@ -65,10 +65,91 @@ function ready() {
             node: null
         }]
     };
+    
+    var factsMutationPatch = {
+        ctor: "change",
+        type: "facts",
+        data: {
+            tag: "view",
+            facts: {
+                backgroundColor: "cyan"
+            }
+        }
+    };
+    
+    var factsAdditionPatch = {
+        ctor: "at",
+        index: 1,
+        patches: [{
+            ctor: "change",
+            type: "facts",
+            data: {
+                tag: "label",
+                facts: {
+                    shadowColor: "red"
+                }
+            }
+        }]
+    };
+    
+    var factsRemovalPatch = {
+        ctor: "at",
+        index: 1,
+        patches: [{
+            ctor: "change",
+            type: "facts",
+            data: {
+                tag: "label",
+                facts: {
+                    numberOfLines: undefined,
+                    color: undefined
+                }
+            }
+        }]
+    };
+    
+    var combinedPatch = {
+        ctor: "at",
+        index: 1,
+        patches: [{
+            ctor: "change",
+            type: "facts",
+            data: {
+                tag: "label",
+                facts: {
+                    numberOfLines: undefined,
+                    color: undefined
+                }
+            }
+        }, {
+            ctor: "change",
+            type: "facts",
+            data: {
+                tag: "label",
+                facts: {
+                    shadowColor: "red"
+                }
+            }
+        }]
+    }
+
+    var removeLastPatch = {
+        ctor: "change",
+        type: "remove-last",
+        data: 1,
+        node: null
+    };
+    
+    var appendPatch = {
+        ctor: "change",
+        type: "append",
+        data: [helloLabel]
+    };
 
     initialRender(column);
     consoleLog("called initialRender");
     
-    applyPatches([redrawPatch]);
+//    applyPatches([combinedPatch]);
+    applyPatches([removeLastPatch, redrawPatch, appendPatch, factsMutationPatch]);
     consoleLog("called applyPatches");
 }
