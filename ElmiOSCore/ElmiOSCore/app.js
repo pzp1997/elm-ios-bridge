@@ -1,17 +1,4 @@
 function ready() {
-    consoleLog("ready called!");
-    
-    //    var label = {
-    //        "tag": "label",
-    //        "facts": {
-    //            "text": "hello world!",
-    //            "textColor": "red",
-    //            "position": "absolute",
-    //            "top": 200,
-    //            "left": 200
-    //        }
-    //    };
-    
     var helloLabel = {
         tag: "label",
         facts: {
@@ -58,12 +45,12 @@ function ready() {
     var redrawPatch = {
         ctor: "at",
         index: 0,
-        patches: [{
+        patch: {
             ctor: "change",
             type: "redraw",
             data: elmLabel,
-            node: null
-        }]
+            node: undefined
+        }
     };
     
     var factsMutationPatch = {
@@ -71,85 +58,88 @@ function ready() {
         type: "facts",
         data: {
             tag: "view",
-            facts: {
-                backgroundColor: "cyan"
-            }
-        }
+            backgroundColor: "cyan"
+        },
+        node: undefined
     };
     
     var factsAdditionPatch = {
         ctor: "at",
         index: 1,
-        patches: [{
+        patch: {
             ctor: "change",
             type: "facts",
             data: {
                 tag: "label",
-                facts: {
-                    shadowColor: "red"
-                }
-            }
-        }]
+                shadowColor: "red"
+            },
+            node: undefined
+        }
     };
     
     var factsRemovalPatch = {
         ctor: "at",
         index: 1,
-        patches: [{
+        patch: {
             ctor: "change",
             type: "facts",
             data: {
                 tag: "label",
-                facts: {
-                    numberOfLines: undefined,
-                    color: undefined
-                }
-            }
-        }]
+                numberOfLines: undefined,
+                color: undefined
+            },
+            node: undefined
+        }
     };
     
     var combinedPatch = {
         ctor: "at",
         index: 1,
-        patches: [{
-            ctor: "change",
-            type: "facts",
-            data: {
-                tag: "label",
-                facts: {
+        patch: {
+            ctor: "batch",
+            patches: [{
+                ctor: "change",
+                type: "facts",
+                data: {
+                    tag: "label",
                     numberOfLines: undefined,
                     color: undefined
-                }
-            }
-        }, {
-            ctor: "change",
-            type: "facts",
-            data: {
-                tag: "label",
-                facts: {
+                },
+                node: undefined
+            },
+            {
+                ctor: "change",
+                type: "facts",
+                data: {
+                    tag: "label",
                     shadowColor: "red"
-                }
-            }
-        }]
+                },
+                node: undefined
+            }]
+        }
     }
 
     var removeLastPatch = {
         ctor: "change",
         type: "remove-last",
         data: 1,
-        node: null
+        node: undefined
     };
     
     var appendPatch = {
         ctor: "change",
         type: "append",
-        data: [helloLabel]
+        data: [helloLabel],
+        node: undefined
+    };
+    
+    var batchedPatches = {
+        ctor: "batch",
+        patches: [removeLastPatch, appendPatch, redrawPatch, factsMutationPatch]
     };
 
     initialRender(column);
-    consoleLog("called initialRender");
     
-//    applyPatches([combinedPatch]);
-    applyPatches([removeLastPatch, redrawPatch, appendPatch, factsMutationPatch]);
-    consoleLog("called applyPatches");
+    applyPatches(batchedPatches);
+    
 }

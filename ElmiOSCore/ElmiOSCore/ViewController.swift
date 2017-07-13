@@ -14,8 +14,9 @@ class ViewController: UIViewController {
         }
         context.setObject(initialRender, forKeyedSubscript: "initialRender" as (NSCopying & NSObjectProtocol)!)
         
-        let applyPatches: @convention(block) ([[String : Any]]) -> Void = { (patches) in
-            VirtualUIKit.applyPatches(patches)
+        let applyPatches: @convention(block) ([String : Any]) -> Void = { (patches) in
+            var patches = patches
+            VirtualUIKit.applyPatches(&patches)
         }
         context.setObject(applyPatches, forKeyedSubscript: "applyPatches" as (NSCopying & NSObjectProtocol)!)
 

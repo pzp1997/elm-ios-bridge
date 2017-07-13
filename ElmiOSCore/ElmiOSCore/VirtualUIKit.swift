@@ -4,6 +4,8 @@ import JavaScriptCore
 
 
 class VirtualUIKit : NSObject {
+    
+    typealias Json = [String : Any]
 
     static var rootView : UIView? = nil
     static let viewController : ViewController = {
@@ -13,39 +15,58 @@ class VirtualUIKit : NSObject {
     }()
 
 
-
     /* APPLY PATCHES */
     
 
-    static func applyPatches(_ patches: [[String : Any]]) {
-        // TODO consider handling patches to root node seperately
-        if let view = rootView {
-            let patchList = addUIKitNodes(rootView: view, patches: patches)
-            for patch in patchList {
+    static func applyPatches(_ patches: inout Json) {
+        if let root = rootView {
+            addUIKitNodes(view: root, patch: &patches)
+            applyPatchesHelp(patches)
+            root.yoga.applyLayout(preservingOrigin: true)
+        }
+    }
+    
+    static func applyPatchesHelp(_ patch: Json) {
+        if let ctor = patch["ctor"] as? String {
+            switch ctor {
+            case "change":
+                print(patch)
                 applyPatch(patch)
-            }
-            if !patchList.isEmpty, let root = rootView {
-                root.yoga.applyLayout(preservingOrigin: true)
+                break
+            case "at":
+                if let subpatch = patch["patch"] as? Json {
+                    applyPatchesHelp(subpatch)
+                }
+                break
+            case "batch":
+                if let patches = patch["patches"] as? [Json] {
+                    for p in patches {
+                        applyPatchesHelp(p)
+                    }
+                }
+                break
+            default:
+                break
             }
         }
     }
 
-    static func applyPatch(_ patch: [String : Any]) {
+    static func applyPatch(_ patch: Json) {
         if let type = patch["type"] as? String, let node = patch["node"] as? UIView {
             switch type {
             case "redraw":
-                if let virtualNode = patch["data"] as? [String : Any], let newNode = render(virtualView: virtualNode) {
+                if let virtualNode = patch["data"] as? Json, let newNode = render(virtualView: virtualNode) {
                     if let parent = node.superview {
                         replaceSubview(parent: parent, old: node, new: newNode)
 //                        parent.yoga.applyLayout(preservingOrigin: true)
                     }
                 }
             case "facts":
-                if let data = patch["data"] as? [String : Any], let tag = data["tag"] as? String, let facts = data["facts"] as? [String : Any] {
+                if let facts = patch["data"] as? Json, let tag = facts["tag"] as? String {
                     applyFacts(view: node, facts: facts, tag: tag)
                 }
             case "append":
-                if let children = patch["data"] as? [[String : Any]] {
+                if let children = patch["data"] as? [Json] {
                     for virtualChild in children {
                         if let child = render(virtualView: virtualChild) {
                             node.addSubview(child)
@@ -77,27 +98,31 @@ class VirtualUIKit : NSObject {
 
     /* ADD UIKIT NODES TO PATCHES */
 
-    // TODO don't flatten the tree. get rid of stack in favor of recursion.
-    static func addUIKitNodes(rootView: UIView, patches: [[String : Any]]) -> [[String : Any]] {
-        var patchList : [[String : Any]] = []
-
-        var stack : [([String : Any], UIView)] = []
-        for patch in patches.reversed() {
-            stack.append((patch, rootView))
-        }
-    
-        while !stack.isEmpty {
-            var (patch, view) = stack.removeLast()
-            if let ctor = patch["ctor"] as? String, ctor != "change", let index = patch["index"] as? Int, let patches = patch["patches"] as? [[String : Any]] {
-                let subview = view.subviews[index]
-                stack.append(contentsOf: patches.map { ($0, subview) }.reversed())
-            } else {
+    static func addUIKitNodes(view: UIView, patch: inout Json) {
+        if let ctor = patch["ctor"] as? String {
+            switch ctor {
+            case "change":
                 patch["node"] = view
-                patchList.append(patch)
+                break
+            case "at":
+                if let index = patch["index"] as? Int, var subpatch = patch["patch"] as? Json {
+                    addUIKitNodes(view: view.subviews[index], patch: &subpatch)
+                    patch["patch"] = subpatch
+                }
+                break
+            case "batch":
+                if var patches = patch["patches"] as? [Json] {
+                    for i in 0..<patches.count {
+                        addUIKitNodes(view: view, patch: &patches[i])
+                    }
+                    patch["patches"] = patches
+                }
+                print(patch)
+                break
+            default:
+                break
             }
         }
-
-        return patchList
     }
 
 
@@ -105,20 +130,20 @@ class VirtualUIKit : NSObject {
     /* RENDER */
 
 
-    static func initialRender(view: [String : Any]) {
+    static func initialRender(view: Json) {
         if let renderedView = render(virtualView: view) {
             rootView = renderedView
             viewController.addToRootView(subview: renderedView)
         }
     }
 
-    static func render(virtualView: [String : Any]) -> UIView? {
-        if let tag = virtualView["tag"] as? String, let facts = virtualView["facts"] as? [String : Any] {
+    static func render(virtualView: Json) -> UIView? {
+        if let tag = virtualView["tag"] as? String, let facts = virtualView["facts"] as? Json {
             switch tag {
             case "label":
                 return renderLabel(facts: facts)
             case "view":
-                if let children = virtualView["children"] as? [[String : Any]] {
+                if let children = virtualView["children"] as? [Json] {
                     return renderView(facts: facts, children: children)
                 }
             default:
@@ -128,13 +153,13 @@ class VirtualUIKit : NSObject {
         return nil
     }
 
-    static func renderLabel(facts: [String : Any]) -> UILabel {
+    static func renderLabel(facts: Json) -> UILabel {
         let label: UILabel = UILabel()
         applyFacts(view: label, facts: facts, tag: "label")
         return label
     }
 
-    static func renderView(facts: [String : Any], children: [[String : Any]]) -> UIView {
+    static func renderView(facts: Json, children: [Json]) -> UIView {
         let view: UIView = UIView()
 
         applyFacts(view: view, facts: facts, tag: "view")
@@ -152,7 +177,7 @@ class VirtualUIKit : NSObject {
 
     /* APPLY FACTS */
 
-    static func applyFacts(view: UIView, facts: [String : Any], tag: String) {
+    static func applyFacts(view: UIView, facts: Json, tag: String) {
         switch tag {
         case "label":
             applyLabelFacts(label: view as! UILabel, facts: facts)
@@ -166,12 +191,12 @@ class VirtualUIKit : NSObject {
         
 //        applyYogaFacts(view: view, facts: facts)
 
-        if let yogaFacts = facts["YOGA"] as? [String : Any] {
+        if let yogaFacts = facts["YOGA"] as? Json {
             applyYogaFacts(view: view, facts: yogaFacts)
         }
     }
 
-    static func applyLabelFacts(label: UILabel, facts: [String: Any]) {
+    static func applyLabelFacts(label: UILabel, facts: Json) {
         // text
         if let text = facts["text"] as? String {
             label.text = text
@@ -197,7 +222,6 @@ class VirtualUIKit : NSObject {
 
         // numberOfLines
         let numberOfLines = (facts["numberOfLines"] as? Int) ?? 1
-        print(numberOfLines)
         label.numberOfLines = numberOfLines
 
         // lineBreakMode
@@ -229,13 +253,13 @@ class VirtualUIKit : NSObject {
         }
     }
 
-    static func applyViewFacts(view: UIView, facts: [String : Any]) {
+    static func applyViewFacts(view: UIView, facts: Json) {
         if let backgroundColor = facts["backgroundColor"] as? String {
             view.backgroundColor = extractColor(backgroundColor)
         }
     }
 
-    static func applyYogaFacts(view: UIView, facts: [String : Any]) {
+    static func applyYogaFacts(view: UIView, facts: Json) {
         view.configureLayout { (layout) in
             layout.isEnabled = true
 
