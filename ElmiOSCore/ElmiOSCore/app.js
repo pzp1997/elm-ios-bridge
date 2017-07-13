@@ -1,4 +1,29 @@
 function ready() {
+    
+    function makeChangePatch(type, data) {
+        return {
+            ctor: 'change',
+            type: type,
+            data: data,
+            node: undefined
+        };
+    }
+
+    function makeAtPatch(index, patch) {
+        return {
+            ctor: 'at',
+            index: index,
+            patch: patch
+        };
+    }
+
+    function makeBatchPatch(patches) {
+        return {
+            ctor: 'batch',
+            patches: patches
+        }
+    }
+
     var helloLabel = {
         tag: "label",
         facts: {
@@ -41,105 +66,25 @@ function ready() {
         },
         children: [helloLabel, elmLabel]
     };
-    
-    var redrawPatch = {
-        ctor: "at",
-        index: 0,
-        patch: {
-            ctor: "change",
-            type: "redraw",
-            data: elmLabel,
-            node: undefined
-        }
-    };
-    
-    var factsMutationPatch = {
-        ctor: "change",
-        type: "facts",
-        data: {
-            tag: "view",
-            backgroundColor: "cyan"
-        },
-        node: undefined
-    };
-    
-    var factsAdditionPatch = {
-        ctor: "at",
-        index: 1,
-        patch: {
-            ctor: "change",
-            type: "facts",
-            data: {
-                tag: "label",
-                shadowColor: "red"
-            },
-            node: undefined
-        }
-    };
-    
-    var factsRemovalPatch = {
-        ctor: "at",
-        index: 1,
-        patch: {
-            ctor: "change",
-            type: "facts",
-            data: {
-                tag: "label",
-                numberOfLines: undefined,
-                color: undefined
-            },
-            node: undefined
-        }
-    };
-    
-    var combinedPatch = {
-        ctor: "at",
-        index: 1,
-        patch: {
-            ctor: "batch",
-            patches: [{
-                ctor: "change",
-                type: "facts",
-                data: {
-                    tag: "label",
-                    numberOfLines: undefined,
-                    color: undefined
-                },
-                node: undefined
-            },
-            {
-                ctor: "change",
-                type: "facts",
-                data: {
-                    tag: "label",
-                    shadowColor: "red"
-                },
-                node: undefined
-            }]
-        }
-    }
 
-    var removeLastPatch = {
-        ctor: "change",
-        type: "remove-last",
-        data: 1,
-        node: undefined
-    };
-    
-    var appendPatch = {
-        ctor: "change",
-        type: "append",
-        data: [helloLabel],
-        node: undefined
-    };
-    
-    var batchedPatches = {
-        ctor: "batch",
-        patches: [removeLastPatch, appendPatch, redrawPatch, factsMutationPatch]
-    };
+    var redrawPatch = makeAtPatch(0, makeChangePatch("redraw", elmLabel));
+
+    var factsMutationPatch = makeChangePatch("facts", { tag: "view", backgroundColor: "cyan" });
+
+    var factsAdditionPatch = makeAtPatch(1, makeChangePatch("facts", { tag: "label", shadowColor: "red" }));
+
+    var factsRemovalPatch = makeAtPatch(1, makeChangePatch("facts", { tag: "label", numberOfLines: undefined, color: undefined }));
+
+    var combinedPatch = makeAtPatch(1, makeBatchPatch([makeChangePatch("facts", { tag: "label", numberOfLines: undefined, color: undefined }), makeChangePatch("facts", { tag: "label", shadowColor: "red" })]));
+
+    var removeLastPatch = makeChangePatch("remove-last", 1);
+
+    var appendPatch = makeChangePatch("append", [helloLabel]);
+
+    var batchedPatches = makeBatchPatch([removeLastPatch, appendPatch, redrawPatch, factsMutationPatch]);
 
     initialRender(column);
-    
+
     applyPatches(batchedPatches);
     
 }
