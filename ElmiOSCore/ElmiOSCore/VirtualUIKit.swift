@@ -200,11 +200,11 @@ class VirtualUIKit : NSObject {
         default:
             break
         }
-        
-//        applyYogaFacts(view: view, facts: facts)
 
         if let yogaFacts = facts["YOGA"] as? Json {
             applyYogaFacts(view: view, facts: yogaFacts)
+        } else {
+            view.yoga.isEnabled = true
         }
     }
 
@@ -212,6 +212,7 @@ class VirtualUIKit : NSObject {
         // text
         if let text = facts["text"] as? String {
             label.text = text
+            label.yoga.markDirty()
         }
 
         // textColor
@@ -331,7 +332,7 @@ class VirtualUIKit : NSObject {
                 case "alignSelf":
                     if let value = facts[key] as? String, let align = extractAlign(value) {
                         // TODO store alignSelf as an Int in JSON and use rawValue
-                        layout.alignItems = align
+                        layout.alignSelf = align
                     }
                     break
 
