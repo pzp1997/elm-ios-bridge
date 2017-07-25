@@ -19,6 +19,7 @@ class VirtualUIKit : NSObject {
     
 
     static func applyPatches(_ patches: inout Json) {
+        print("applyPatches")
         if let root = rootView {
             addUIKitNodes(view: root, patch: &patches)
             applyPatchesHelp(patches)
@@ -30,7 +31,6 @@ class VirtualUIKit : NSObject {
         if let ctor = patch["ctor"] as? String {
             switch ctor {
             case "change":
-                print(patch)
                 applyPatch(patch)
                 break
             case "at":
@@ -117,7 +117,6 @@ class VirtualUIKit : NSObject {
                     }
                     patch["patches"] = patches
                 }
-                print(patch)
                 break
             default:
                 break
@@ -131,6 +130,7 @@ class VirtualUIKit : NSObject {
 
 
     static func initialRender(view: Json) {
+        print("initialRender")
         if let renderedView = render(virtualView: view) {
             rootView = renderedView
             viewController.addToRootView(subview: renderedView)
