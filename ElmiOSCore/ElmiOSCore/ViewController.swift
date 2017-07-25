@@ -4,6 +4,8 @@ import JavaScriptCore
 
 class ViewController: UIViewController {
 
+    static var timerId = 0
+
     lazy var jsContext: JSContext? = {
         let context: JSContext = JSContext()
 
@@ -20,8 +22,41 @@ class ViewController: UIViewController {
         }
         context.setObject(applyPatches, forKeyedSubscript: "applyPatches" as (NSCopying & NSObjectProtocol)!)
 
+        // add missing BOM stuff
 
-        // console
+        let setTimeout: @convention(block) (JSValue, Double) -> Void = { (function, timeout) in
+            print("setTimeout")
+            DispatchQueue.main.asyncAfter(deadline: .now() + timeout, execute: { () -> Void in
+                function.call(withArguments: [])
+            })
+        }
+        context.setObject(setTimeout, forKeyedSubscript: "setTimeout" as (NSCopying & NSObjectProtocol)!)
+
+//        let setInterval: @convention(block) (JSValue, Double) -> Void = { (function, interval) in
+//            Timer.scheduledTimer(timeInterval: interval / 1000.0, repeats: true, block: { (timer) in
+//                function.call(withArguments: [])
+//            })
+//            return
+//        }
+
+//        func setIntervalHelp(function: JSValue, interval: Double) {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + interval, execute: { () -> Void in
+//                function.call(withArguments: [])
+//                setIntervalHelp(function: function, interval: interval)
+//            })
+//        }
+        let setInterval: @convention(block) (JSValue, Double) -> Int = { (function, interval) in
+            print("setInterval")
+            Timer.scheduledTimer(withTimeInterval: interval / 1000.0, repeats: true, block: { (timer) in function.call(withArguments: []) })
+            timerId += 1
+            return timerId
+        }
+        context.setObject(setInterval, forKeyedSubscript: "setInterval" as (NSCopying & NSObjectProtocol)!)
+
+        let clearInterval: @convention(block) (Int) -> Void = { id in
+            print(id)
+        }
+        context.setObject(clearInterval, forKeyedSubscript: "clearInterval" as (NSCopying & NSObjectProtocol)!)
 
         let consoleLog: @convention(block) (String) -> Void = { message in
             print("JS Console: " + message)
