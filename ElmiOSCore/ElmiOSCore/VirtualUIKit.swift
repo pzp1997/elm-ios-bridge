@@ -138,13 +138,24 @@ class VirtualUIKit : NSObject {
     }
 
     static func render(virtualView: Json) -> UIView? {
-        if let tag = virtualView["tag"] as? String, let facts = virtualView["facts"] as? Json {
-            switch tag {
-            case "label":
-                return renderLabel(facts: facts)
-            case "view":
-                if let children = virtualView["children"] as? [Json] {
+        if let type = virtualView["type"] as? String {
+            switch type {
+            case "thunk":
+                if let node = virtualView["node"] as? Json {
+                    return render(virtualView: node)
+                }
+            case "parent":
+                if let facts = virtualView["facts"] as? Json, let children = virtualView["children"] as? [Json] {
                     return renderView(facts: facts, children: children)
+                }
+            case "leaf":
+                if let tag = virtualView["tag"] as? String, let facts = virtualView["facts"] as? Json {
+                    switch tag {
+                    case "label":
+                        return renderLabel(facts: facts)
+                    default:
+                        return nil
+                    }
                 }
             default:
                 return nil
@@ -162,7 +173,7 @@ class VirtualUIKit : NSObject {
     static func renderView(facts: Json, children: [Json]) -> UIView {
         let view: UIView = UIView()
 
-        applyFacts(view: view, facts: facts, tag: "view")
+        applyFacts(view: view, facts: facts, tag: "parent")
 
         for child in children {
             if let renderedChild = render(virtualView: child) {
@@ -178,11 +189,12 @@ class VirtualUIKit : NSObject {
     /* APPLY FACTS */
 
     static func applyFacts(view: UIView, facts: Json, tag: String) {
+        print("applyFacts")
         switch tag {
         case "label":
             applyLabelFacts(label: view as! UILabel, facts: facts)
             break
-        case "view":
+        case "parent":
             applyViewFacts(view: view, facts: facts)
             break
         default:
