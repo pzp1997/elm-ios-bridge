@@ -69,9 +69,9 @@ class ViewController: UIViewController {
             print("JS Error: \(exception?.description ?? "unknown error")")
         }
 
-        // load app.js
+        // load Elm program
 
-        guard let appJsPath = Bundle.main.path(forResource: "app", ofType: "js") else {
+        guard let appJsPath = Bundle.main.path(forResource: "tick2", ofType: "js") else {
             return nil
         }
 
@@ -101,7 +101,7 @@ class ViewController: UIViewController {
             layout.height = YGValue(containerSize.height)
         }
         
-        _ = jsContext?.objectForKeyedSubscript("ready").call(withArguments: [])
+        _ = jsContext?.objectForKeyedSubscript("Elm").objectForKeyedSubscript("Main").objectForKeyedSubscript("start").call(withArguments: [])
     }
     
     func addToRootView(subview: UIView) {
