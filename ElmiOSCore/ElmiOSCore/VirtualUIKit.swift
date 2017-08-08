@@ -209,67 +209,95 @@ class VirtualUIKit : NSObject {
     }
 
     static func applyLabelFacts(label: UILabel, facts: Json) {
-        // text
-        if let text = facts["text"] as? String {
-            label.text = text
-            label.yoga.markDirty()
-        }
-
-        // textColor
-        if let textColor = facts["textColor"] as? String, let color = extractColor(textColor) {
-            label.textColor = color
-        }
-
-        // textAlignment
-        if let textAlignment = facts["textAlignment"] as? String {
-            // TODO store textAlignment as an Int in JSON and use rawValue
-            label.textAlignment = extractTextAlignment(textAlignment)
-        }
-
-        // font
-        if let font = facts["font"] as? String {
-            label.font = UIFont(name: font, size: facts["fontSize"] as? CGFloat ?? UIFont.systemFontSize)
-        } else if let fontSize = facts["fontSize"] as? CGFloat {
-            label.font = UIFont.systemFont(ofSize: fontSize)
-        }
-
-        // numberOfLines
-        let numberOfLines = (facts["numberOfLines"] as? Int) ?? 1
-        label.numberOfLines = numberOfLines
-
-        // lineBreakMode
-        if let lineBreakMode = facts["lineBreakMode"] as? String {
-            // TODO store lineBreakMode as an Int in JSON and use rawValue
-            label.lineBreakMode = extractLineBreakMode(lineBreakMode)
-        }
-
-        // isEnabled
-        if let isEnabled = facts["isEnabled"] as? Bool {
-            label.isEnabled = isEnabled
-        }
-
-        // highlight
-        if let isHighlighted = facts["isHighlighted"] as? Bool {
-            label.isHighlighted = isHighlighted
-        }
-
-        if let highlightedTextColor = facts["highlightedTextColor"] as? String, let color = extractColor(highlightedTextColor) {
-            label.highlightedTextColor = color
-        }
-
-        // shadow
-        if let shadowColor = facts["shadowColor"] as? String, let color = extractColor(shadowColor) {
-            label.shadowColor = color
-            if let shadowOffsetX = facts["shadowOffsetX"] as? CGFloat, let shadowOffsetY = facts["shadowOffsetY"] as? CGFloat {
-                label.shadowOffset = CGSize(width: shadowOffsetX, height: shadowOffsetY)
+        for key in facts.keys {
+            switch key {
+            case "text":
+                if let value = facts[key] as? String {
+                    label.text = value
+                } else {
+                    label.text = nil
+                }
+                label.yoga.markDirty()
+                break
+            case "textColor":
+                if let value = facts[key] as? [Float] {
+                    label.textColor = extractColor(value)
+                } else {
+                    label.textColor = .black
+                }
+                break
+            case "textAlignment":
+                if let value = facts[key] as? String {
+                    // TODO store textAlignment as an Int in JSON and use rawValue
+                    label.textAlignment = extractTextAlignment(value)
+                } else {
+                    label.textAlignment = .natural // TODO prior to iOS 9.0, `left` was the default
+                }
+                break
+            case "font":
+                if let value = facts[key] as? String {
+                    label.font = UIFont(name: value, size: label.font.pointSize)
+                } else {
+                    label.font = UIFont.systemFont(ofSize: label.font.pointSize)
+                }
+                break
+            case "fontSize":
+                if let value = facts[key] as? CGFloat {
+                    label.font = label.font.withSize(value)
+                } else {
+                    label.font = label.font.withSize(UIFont.systemFontSize)
+                }
+                break
+            case "numberOfLines":
+                if let value = facts[key] as? Int {
+                    label.numberOfLines = value
+                } else {
+                    label.numberOfLines = 1
+                }
+                break
+            case "lineBreakMode":
+                if let value = facts[key] as? String {
+                    // TODO store lineBreakMode as an Int in JSON and use rawValue
+                    label.lineBreakMode = extractLineBreakMode(value)
+                } else {
+                    label.lineBreakMode = .byTruncatingTail
+                }
+                break
+            case "shadowColor":
+                if let value = facts[key] as? [Float] {
+                    label.shadowColor = extractColor(value)
+                } else {
+                    label.shadowColor = nil
+                }
+                break
+            case "shadowOffset":
+                if let value = facts[key] as? [Double] {
+                    label.shadowOffset = CGSize(width: value[0], height: value[1])
+                } else {
+                    label.shadowOffset = CGSize(width: 0, height: -1)
+                }
+                break
+            default:
+                break
             }
         }
     }
 
     static func applyViewFacts(view: UIView, facts: Json) {
-        if let backgroundColor = facts["backgroundColor"] as? String {
-            view.backgroundColor = extractColor(backgroundColor)
+        for key in facts.keys {
+            switch key {
+            case "backgroundColor":
+                if let value = facts[key] as? [Float] {
+                    view.backgroundColor = extractColor(value)
+                } else {
+                    view.backgroundColor = nil
+                }
+                break
+            default:
+                break
+            }
         }
+
     }
 
     static func applyYogaFacts(view: UIView, facts: Json) {
@@ -278,12 +306,6 @@ class VirtualUIKit : NSObject {
 
             for key in facts.keys {
                 switch key {
-//                case "yogaEnabled":
-//                    if let value = facts[key] as? Bool {
-//                        layout.isEnabled = value
-//                    }
-//                    break
-
                 // Container properties
 
                 case "flexDirection":
@@ -354,6 +376,8 @@ class VirtualUIKit : NSObject {
                 case "left":
                     if let value = facts[key] as? Float {
                         layout.left = YGValue(value)
+                    } else {
+                        layout.left = YGValue(Float.nan)
                     }
                     break
                 case "top":
@@ -583,50 +607,23 @@ class VirtualUIKit : NSObject {
         }
     }
 
-    static func extractColor(_ color: String) -> UIColor? {
-        switch color {
-        case "red":
-            return .red
-        case "orange":
-            return .orange
-        case "yellow":
-            return .yellow
-        case "green":
-            return .green
-        case "cyan":
-            return .cyan
-        case "blue":
-            return .blue
-        case "magenta":
-            return .magenta
-        case "purple":
-            return .purple
-        case "white":
-            return .white
-        case "gray":
-            return .gray
-        case "black":
-            return .black
-        case "brown":
-            return .brown
-        default:
-            return nil
-        }
+    static func extractColor(_ rgba: [Float]) -> UIColor {
+        return UIColor(colorLiteralRed: rgba[0], green: rgba[1], blue: rgba[2], alpha: rgba[3])
     }
 
     static func extractLineBreakMode(_ lbM: String) -> NSLineBreakMode {
         switch lbM {
-        case "":
+        case "byWordWrapping":
             return .byWordWrapping
-        case "":
+        case "byCharWrapping":
             return .byCharWrapping
-        case "":
+        case "byClipping":
             return .byClipping
-        case "":
+        case "byTruncatingHead":
             return .byTruncatingHead
-        case "":
+        case "byTruncatingTail":
             return .byTruncatingTail
-        case "":
+        case "byTruncatingMiddle":
             return .byTruncatingMiddle
         default:
             return .byTruncatingTail
@@ -707,4 +704,3 @@ class VirtualUIKit : NSObject {
     }
 
 }
-
