@@ -129,30 +129,66 @@ class VirtualUIKit : NSObject {
     /* RENDER */
 
 
-    static func initialRender(view: Json) {
+    static func initialRender(view: Json, eventTree: Json) {
         print("initialRender")
-        if let renderedView = render(virtualView: view) {
+        var offset = 0
+        if let renderedView = render(virtualView: view, eventOffset: &offset, eventNode: eventTree) {
             rootView = renderedView
             viewController.addToRootView(subview: renderedView)
         }
     }
 
-    static func render(virtualView: Json) -> UIView? {
+    static func render(virtualView: Json, eventOffset: inout Int, eventNode: Json) -> UIView? {
         if let type = virtualView["type"] as? String {
             switch type {
             case "thunk":
                 if let node = virtualView["node"] as? Json {
-                    return render(virtualView: node)
+                    return render(virtualView: node, eventOffset: &eventOffset, eventNode: eventNode)
+                }
+            case "tagger":
+                if let node = virtualView["node"] as? Json {
+                    var newEventNode = eventNode["kidListHd"]
+                    while let evtNode = newEventNode as? Json, let offset = evtNode["offset"] as? Int, offset != eventOffset {
+                        newEventNode = evtNode["next"]
+                    }
+                    
+                    if let newEventNode = newEventNode as? Json {
+                        var offset = 0
+                        return render(virtualView: node, eventOffset: &offset, eventNode: newEventNode)
+                    }
                 }
             case "parent":
                 if let facts = virtualView["facts"] as? Json, let children = virtualView["children"] as? [Json] {
-                    return renderView(facts: facts, children: children)
+                    let view: UIView = UIView()
+
+                    applyFacts(view: view, facts: facts, tag: "parent")
+
+                    if let handlerHead = eventNode["handlerListHd"] as? Json, let handlers = findHandlers(handlerList: handlerHead, offset: eventOffset) {
+                        applyHandlers(handlers, view: view)
+                    }
+
+                    for child in children {
+                        eventOffset += 1
+                        if let renderedChild = render(virtualView: child, eventOffset: &eventOffset, eventNode: eventNode) {
+                            view.addSubview(renderedChild)
+                        }
+                    }
+
+                    return view
                 }
             case "leaf":
                 if let tag = virtualView["tag"] as? String, let facts = virtualView["facts"] as? Json {
                     switch tag {
                     case "label":
-                        return renderLabel(facts: facts)
+                        let label: UILabel = UILabel()
+                        
+                        applyFacts(view: label, facts: facts, tag: "label")
+                        
+                        if let handlerHead = eventNode["handlerListHd"] as? Json, let handlers = findHandlers(handlerList: handlerHead, offset: eventOffset) {
+                            applyHandlers(handlers, view: label)
+                        }
+
+                        return label
                     default:
                         return nil
                     }
@@ -164,27 +200,46 @@ class VirtualUIKit : NSObject {
         return nil
     }
 
-    static func renderLabel(facts: Json) -> UILabel {
-        let label: UILabel = UILabel()
-        applyFacts(view: label, facts: facts, tag: "label")
-        return label
+    
+    /* APPLY HANDLERS */
+    
+    static func findHandlers(handlerList: Json?, offset: Int) -> [String: JSValue]? {
+        var handlerNode: Any? = handlerList
+        while let node = handlerNode as? Json, let handlerOffset = node["offset"] as? Int {
+            if handlerOffset == offset, let handlers = node["funcs"] as? [String: JSValue] {
+                return handlers
+            }
+                // TODO make sure the invariant of increasing offsets holds
+                //                                else if handlerOffset < eventOffset {
+                //                                    return
+                //                                }
+            handlerNode = node["next"]
+        }
     }
 
-    static func renderView(facts: Json, children: [Json]) -> UIView {
-        let view: UIView = UIView()
-
-        applyFacts(view: view, facts: facts, tag: "parent")
-
-        for child in children {
-            if let renderedChild = render(virtualView: child) {
-                view.addSubview(renderedChild)
+    static func applyHandlers(_ handlers: [String: JSValue], view: UIView) {
+        for (name, handler) in handlers {
+            switch name {
+            case "valueChanged":
+                view.addTarget(self, action: #selector(onValueChanged), for: .valueChanged)
+                break
+            case "touchUp":
+                view.addTarget(self, action: #selector(onTouchUp), for: .touchUpInside)
+                break
+            case "touchUpOutside":
+                view.addTarget(self, action: #selector(onTouchUpOutside), for: .touchUpOutside)
+                break
+            case "touchDown":
+                view.addTarget(self, action: #selector(onTouchDown), for: .touchDownInside)
+                break
+            case "touchDownOutside":
+                view.addTarget(self, action: #selector(onTouchDownOutside), for: .touchDownOutside)
+                break
+            default:
+                break
             }
         }
-
-        return view
     }
-
-
 
     /* APPLY FACTS */
 
