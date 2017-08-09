@@ -51,7 +51,7 @@ class VirtualUIKit : NSObject {
         }
     }
 
-    static func applyPatch(_ patch: Json) {
+    static func applyPatch(_ patch: Json, eventTree: Json) {
         if let type = patch["type"] as? String, let node = patch["node"] as? UIView {
             switch type {
             case "redraw":
@@ -129,33 +129,27 @@ class VirtualUIKit : NSObject {
     /* RENDER */
 
 
-    static func initialRender(view: Json, eventTree: Json) {
+    static func initialRender(view: Json, eventTree: inout Json) {
         print("initialRender")
         var offset = 0
-        if let renderedView = render(virtualView: view, eventOffset: &offset, eventNode: eventTree) {
+        if let renderedView = render(virtualView: view, eventOffset: &offset, eventNode: &eventTree) {
             rootView = renderedView
             viewController.addToRootView(subview: renderedView)
         }
     }
 
-    static func render(virtualView: Json, eventOffset: inout Int, eventNode: Json) -> UIView? {
+    static func render(virtualView: Json, eventOffset: inout Int, eventNode: inout Json) -> UIView? {
         if let type = virtualView["type"] as? String {
             switch type {
             case "thunk":
                 if let node = virtualView["node"] as? Json {
-                    return render(virtualView: node, eventOffset: &eventOffset, eventNode: eventNode)
+                    return render(virtualView: node, eventOffset: &eventOffset, eventNode: &eventNode)
                 }
             case "tagger":
-                if let node = virtualView["node"] as? Json {
-                    var newEventNode = eventNode["kidListHd"]
-                    while let evtNode = newEventNode as? Json, let offset = evtNode["offset"] as? Int, offset != eventOffset {
-                        newEventNode = evtNode["next"]
-                    }
-                    
-                    if let newEventNode = newEventNode as? Json {
-                        var offset = 0
-                        return render(virtualView: node, eventOffset: &offset, eventNode: newEventNode)
-                    }
+                if let node = virtualView["node"] as? Json, var newEventNode = eventNode["kidListHd"] as? Json {
+                    eventNode["kidListHd"] = newEventNode["next"]
+                    var offset = 0
+                    return render(virtualView: node, eventOffset: &offset, eventNode: &newEventNode)
                 }
             case "parent":
                 if let facts = virtualView["facts"] as? Json, let children = virtualView["children"] as? [Json] {
@@ -163,13 +157,15 @@ class VirtualUIKit : NSObject {
 
                     applyFacts(view: view, facts: facts, tag: "parent")
 
-                    if let handlerHead = eventNode["handlerListHd"] as? Json, let handlers = findHandlers(handlerList: handlerHead, offset: eventOffset) {
+                    if let handlersNode = eventNode["handlerListHd"] as? Json, let handlerOffset = handlersNode["offset"] as? Int, handlerOffset == eventOffset, let handlers = handlersNode["funcs"] as? [String: JSValue] {
+                        eventNode["handlerListHd"] = handlersNode["next"]
                         applyHandlers(handlers, view: view)
                     }
 
                     for child in children {
+                        // TODO double check that the offset is correct
                         eventOffset += 1
-                        if let renderedChild = render(virtualView: child, eventOffset: &eventOffset, eventNode: eventNode) {
+                        if let renderedChild = render(virtualView: child, eventOffset: &eventOffset, eventNode: &eventNode) {
                             view.addSubview(renderedChild)
                         }
                     }
@@ -184,7 +180,8 @@ class VirtualUIKit : NSObject {
                         
                         applyFacts(view: label, facts: facts, tag: "label")
                         
-                        if let handlerHead = eventNode["handlerListHd"] as? Json, let handlers = findHandlers(handlerList: handlerHead, offset: eventOffset) {
+                        if let handlersNode = eventNode["handlerListHd"] as? Json, let handlerOffset = handlersNode["offset"] as? Int, handlerOffset == eventOffset, let handlers = handlersNode["func"] as? [String: JSValue] {
+                            eventNode["handlerListHd"] = handlersNode["next"]
                             applyHandlers(handlers, view: label)
                         }
 
@@ -202,38 +199,24 @@ class VirtualUIKit : NSObject {
 
     
     /* APPLY HANDLERS */
-    
-    static func findHandlers(handlerList: Json?, offset: Int) -> [String: JSValue]? {
-        var handlerNode: Any? = handlerList
-        while let node = handlerNode as? Json, let handlerOffset = node["offset"] as? Int {
-            if handlerOffset == offset, let handlers = node["funcs"] as? [String: JSValue] {
-                return handlers
-            }
-                // TODO make sure the invariant of increasing offsets holds
-                //                                else if handlerOffset < eventOffset {
-                //                                    return
-                //                                }
-            handlerNode = node["next"]
-        }
-    }
 
     static func applyHandlers(_ handlers: [String: JSValue], view: UIView) {
         for (name, handler) in handlers {
             switch name {
             case "valueChanged":
-                view.addTarget(self, action: #selector(onValueChanged), for: .valueChanged)
+//                view.addTarget(self, action: #selector(onValueChanged), for: .valueChanged)
                 break
             case "touchUp":
-                view.addTarget(self, action: #selector(onTouchUp), for: .touchUpInside)
+//                view.addTarget(self, action: #selector(onTouchUp), for: .touchUpInside)
                 break
             case "touchUpOutside":
-                view.addTarget(self, action: #selector(onTouchUpOutside), for: .touchUpOutside)
+//                view.addTarget(self, action: #selector(onTouchUpOutside), for: .touchUpOutside)
                 break
             case "touchDown":
-                view.addTarget(self, action: #selector(onTouchDown), for: .touchDownInside)
+//                view.addTarget(self, action: #selector(onTouchDown), for: .touchDownInside)
                 break
             case "touchDownOutside":
-                view.addTarget(self, action: #selector(onTouchDownOutside), for: .touchDownOutside)
+//                view.addTarget(self, action: #selector(onTouchDownOutside), for: .touchDownOutside)
                 break
             default:
                 break
