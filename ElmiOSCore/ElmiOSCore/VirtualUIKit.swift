@@ -200,28 +200,27 @@ class VirtualUIKit : NSObject {
     
     /* APPLY HANDLERS */
 
-    static func applyHandlers(_ handlers: [String: JSValue], view: UIView) {
-        for (name, handler) in handlers {
-            switch name {
-            case "valueChanged":
-//                view.addTarget(self, action: #selector(onValueChanged), for: .valueChanged)
-                break
-            case "touchUp":
-//                view.addTarget(self, action: #selector(onTouchUp), for: .touchUpInside)
-                break
-            case "touchUpOutside":
-//                view.addTarget(self, action: #selector(onTouchUpOutside), for: .touchUpOutside)
-                break
-            case "touchDown":
-//                view.addTarget(self, action: #selector(onTouchDown), for: .touchDownInside)
-                break
-            case "touchDownOutside":
-//                view.addTarget(self, action: #selector(onTouchDownOutside), for: .touchDownOutside)
-                break
-            default:
-                break
+    static func addControlHandlers(_ handlers: [String: Any], doTheRightThing: JSValue, view: UIControl) {
+        for name in handlers.keys {
+            if let eventType = extractEventType(name) {
+                print("addControlHandlers")
+                print(name)
+                view.addAction(event: eventType, { (_, event) in
+                    print("invoking JS callback")
+                    doTheRightThing.call(withArguments: [name, event])
+                })
             }
         }
+    }
+
+    static func removeHandlers(_ handlers: Json, view: UIControl) {
+        for name in handlers.keys {
+            if let eventType = extractEventType(name) {
+                view.removeTarget(nil, action: nil, for: eventType)
+            }
+        }
+        // TODO check if there are no handlers, and if so remove ActionTrampoline.
+    }
 
     static func extractEventType(_ handler: String) -> UIControlEvents? {
         switch handler {
