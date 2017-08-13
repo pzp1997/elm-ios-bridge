@@ -742,3 +742,33 @@ class VirtualUIKit : NSObject {
     }
 
 }
+
+
+/* TARGET-ACTION WITH ANON FUNCS */
+
+class ActionTrampoline<T>: NSObject {
+    var action: (T, UIEvent) -> Void
+    init(action: @escaping (T, UIEvent) -> Void) {
+        self.action = action
+    }
+    @objc func execute(sender: UIControl, forEvent event: UIEvent) {
+        action(sender as! T, event)
+    }
+}
+
+let UIControlActionFunctionProtocolAssociatedObjectKey = UnsafeMutablePointer<Int8>.allocate(capacity: 1)
+
+protocol UIControlActionFunctionProtocol {}
+extension UIControlActionFunctionProtocol where Self: UIControl {
+    func addAction(event: UIControlEvents, _ action: @escaping (Self, UIEvent) -> Void) {
+        if let trampoline = objc_getAssociatedObject(self, UIControlActionFunctionProtocolAssociatedObjectKey) {
+            self.addTarget(trampoline, action: #selector(ActionTrampoline<Self>.execute(sender:forEvent:)), for: event)
+        } else {
+            let trampoline = ActionTrampoline(action: action)
+            self.addTarget(trampoline, action: #selector(ActionTrampoline<Self>.execute(sender:forEvent:)), for: event)
+            objc_setAssociatedObject(self, UIControlActionFunctionProtocolAssociatedObjectKey, trampoline, .OBJC_ASSOCIATION_RETAIN)
+
+        }
+    }
+}
+extension UIControl: UIControlActionFunctionProtocol {}
