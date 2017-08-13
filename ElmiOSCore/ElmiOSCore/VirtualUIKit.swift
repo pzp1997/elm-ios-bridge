@@ -259,6 +259,8 @@ class VirtualUIKit : NSObject {
         case "label":
             applyLabelFacts(label: view as! UILabel, facts: facts)
             break
+        case "button":
+            applyButtonFacts(button: view as! UIButton, facts: facts)
         case "parent":
             applyViewFacts(view: view, facts: facts)
             break
@@ -340,6 +342,25 @@ class VirtualUIKit : NSObject {
                     label.shadowOffset = CGSize(width: value[0], height: value[1])
                 } else {
                     label.shadowOffset = CGSize(width: 0, height: -1)
+                }
+                break
+            default:
+                break
+            }
+        }
+    }
+
+    static func applyButtonFacts(button: UIButton, facts: Json) {
+        print("applyButtonFacts")
+        for key in facts.keys {
+            switch key {
+            case "text":
+                if let value = facts[key] as? String {
+                    button.setTitle(value, for: .normal)
+                    button.yoga.markDirty()
+                } else {
+                    // TODO double check that nil is the default value
+                    button.setTitle(nil, for: .normal)
                 }
                 break
             default:
@@ -649,7 +670,6 @@ class VirtualUIKit : NSObject {
             }
         }
     }
-
 
 
     /* EXTRACT PROPERTY VALUES */
