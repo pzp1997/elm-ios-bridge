@@ -222,6 +222,34 @@ class VirtualUIKit : NSObject {
                 break
             }
         }
+
+    static func extractEventType(_ handler: String) -> UIControlEvents? {
+        switch handler {
+        case "valueChanged":
+            return .valueChanged
+        case "touchUpInside":
+            return .touchUpInside
+        case "touchUpOutside":
+            return .touchUpOutside
+        case "touchDown":
+            return .touchDown
+        case "touchDownRepeat":
+            return .touchDownRepeat
+        case "touchCancel":
+            return .touchCancel
+        case "touchDragInside":
+            return .touchDragInside
+        case "touchDragOutside":
+            return .touchDragOutside
+        case "touchDragEnter":
+            return .touchDragEnter
+        case "touchDragExit":
+            return .touchDragExit
+        case "allTouchEvents":
+            return .allTouchEvents
+        default:
+            return nil
+        }
     }
 
     /* APPLY FACTS */
