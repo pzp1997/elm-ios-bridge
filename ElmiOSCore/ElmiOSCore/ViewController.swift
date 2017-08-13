@@ -11,8 +11,11 @@ class ViewController: UIViewController {
 
         // patch context
 
-        let initialRender: @convention(block) ([String : Any]) -> Void = { (view) in
-            VirtualUIKit.initialRender(view: view)
+        let initialRender: @convention(block) ([String : Any], JSValue) -> Void = { (view, eventTree) in
+            print("JS eventTree")
+            print(eventTree)
+            var eventTree = eventTree
+            VirtualUIKit.initialRender(view: view, eventTree: &eventTree)
         }
         context.setObject(initialRender, forKeyedSubscript: "initialRender" as (NSCopying & NSObjectProtocol)!)
         
@@ -71,7 +74,7 @@ class ViewController: UIViewController {
 
         // load Elm program
 
-        guard let appJsPath = Bundle.main.path(forResource: "tick2", ofType: "js") else {
+        guard let appJsPath = Bundle.main.path(forResource: "index", ofType: "js") else {
             return nil
         }
 
