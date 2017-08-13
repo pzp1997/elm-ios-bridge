@@ -129,8 +129,10 @@ class VirtualUIKit : NSObject {
     /* RENDER */
 
 
-    static func initialRender(view: Json, eventTree: inout Json) {
+    static func initialRender(view: Json, eventTree: inout JSValue) {
         print("initialRender")
+        print("eventTree")
+        print(eventTree)
         var offset = 0
         if let renderedView = render(virtualView: view, eventOffset: &offset, eventNode: &eventTree) {
             rootView = renderedView
@@ -138,7 +140,7 @@ class VirtualUIKit : NSObject {
         }
     }
 
-    static func render(virtualView: Json, eventOffset: inout Int, eventNode: inout Json) -> UIView? {
+    static func render(virtualView: Json, eventOffset: inout Int, eventNode: inout JSValue) -> UIView? {
         if let type = virtualView["type"] as? String {
             switch type {
             case "thunk":
@@ -146,8 +148,8 @@ class VirtualUIKit : NSObject {
                     return render(virtualView: node, eventOffset: &eventOffset, eventNode: &eventNode)
                 }
             case "tagger":
-                if let node = virtualView["node"] as? Json, var newEventNode = eventNode["kidListHd"] as? Json {
-                    eventNode["kidListHd"] = newEventNode["next"]
+                if let node = virtualView["node"] as? Json, var newEventNode = eventNode.forProperty("kidListHd") {
+                    eventNode.setValue(newEventNode.forProperty("next"), forProperty: "kidListHd")
                     var offset = 0
                     return render(virtualView: node, eventOffset: &offset, eventNode: &newEventNode)
                 }
@@ -156,11 +158,6 @@ class VirtualUIKit : NSObject {
                     let view: UIView = UIView()
 
                     applyFacts(view: view, facts: facts, tag: "parent")
-
-                    if let handlersNode = eventNode["handlerListHd"] as? Json, let handlerOffset = handlersNode["offset"] as? Int, handlerOffset == eventOffset, let handlers = handlersNode["funcs"] as? [String: JSValue] {
-                        eventNode["handlerListHd"] = handlersNode["next"]
-                        applyHandlers(handlers, view: view)
-                    }
 
                     for child in children {
                         // TODO double check that the offset is correct
@@ -177,15 +174,23 @@ class VirtualUIKit : NSObject {
                     switch tag {
                     case "label":
                         let label: UILabel = UILabel()
+                        applyFacts(view: label, facts: facts, tag: tag)
+                        return label
+                    case "button":
+                        let button: UIButton = UIButton(type: .system)
+
+                        applyFacts(view: button, facts: facts, tag: tag)
                         
-                        applyFacts(view: label, facts: facts, tag: "label")
                         
-                        if let handlersNode = eventNode["handlerListHd"] as? Json, let handlerOffset = handlersNode["offset"] as? Int, handlerOffset == eventOffset, let handlers = handlersNode["func"] as? [String: JSValue] {
-                            eventNode["handlerListHd"] = handlersNode["next"]
-                            applyHandlers(handlers, view: label)
+                        //                        if let handlersNode = eventNode["handlerListHd"] as? Json, let handlerOffset = handlersNode["offset"] as? Int, handlerOffset == eventOffset, let handlers = handlersNode["funcs"] as? [String: JSValue], let callback = handlersNode["callback"] as? JSValue {
+                        if let handlersNode = eventNode.forProperty("handlerListHd"), let handlerOffset = handlersNode.forProperty("offset").toNumber() as? Int, handlerOffset == eventOffset, let funcs = handlersNode.forProperty("funcs"), let callback = handlersNode.forProperty("callback") {
+
+                            print("foundHandlerNode")
+                            eventNode.setValue(handlersNode.forProperty("next"), forProperty: "handlerListHd")
+                            addControlHandlers(funcs.toDictionary() as! [String: Any], doTheRightThing: callback, view: button)
                         }
 
-                        return label
+                        return button
                     default:
                         return nil
                     }
@@ -196,6 +201,65 @@ class VirtualUIKit : NSObject {
         }
         return nil
     }
+
+//    static func render(virtualView: Json, eventOffset: inout Int, eventNode: inout Json) -> UIView? {
+//        if let type = virtualView["type"] as? String {
+//            switch type {
+//            case "thunk":
+//                if let node = virtualView["node"] as? Json {
+//                    return render(virtualView: node, eventOffset: &eventOffset, eventNode: &eventNode)
+//                }
+//            case "tagger":
+//                if let node = virtualView["node"] as? Json, var newEventNode = eventNode["kidListHd"] as? Json {
+//                    eventNode["kidListHd"] = newEventNode["next"]
+//                    var offset = 0
+//                    return render(virtualView: node, eventOffset: &offset, eventNode: &newEventNode)
+//                }
+//            case "parent":
+//                if let facts = virtualView["facts"] as? Json, let children = virtualView["children"] as? [Json] {
+//                    let view: UIView = UIView()
+//
+//                    applyFacts(view: view, facts: facts, tag: "parent")
+//
+//                    for child in children {
+//                        // TODO double check that the offset is correct
+//                        eventOffset += 1
+//                        if let renderedChild = render(virtualView: child, eventOffset: &eventOffset, eventNode: &eventNode) {
+//                            view.addSubview(renderedChild)
+//                        }
+//                    }
+//
+//                    return view
+//                }
+//            case "leaf":
+//                if let tag = virtualView["tag"] as? String, let facts = virtualView["facts"] as? Json {
+//                    switch tag {
+//                    case "label":
+//                        let label: UILabel = UILabel()
+//                        applyFacts(view: label, facts: facts, tag: tag)
+//                        return label
+//                    case "button":
+//                        let button: UIButton = UIButton(type: .system)
+//
+//                        applyFacts(view: button, facts: facts, tag: tag)
+//
+////                        if let handlersNode = eventNode["handlerListHd"] as? Json, let handlerOffset = handlersNode["offset"] as? Int, handlerOffset == eventOffset, let handlers = handlersNode["funcs"] as? [String: JSValue], let callback = handlersNode["callback"] as? JSValue {
+//                        if let handlersNode = eventNode["handlerListHd"] as? Json, let handlerOffset = handlersNode["offset"] as? Int, handlerOffset == eventOffset, let funcs = handlersNode["funcs"] as? Json {
+//                            print("foundHandlerNode")
+//                            eventNode["handlerListHd"] = handlersNode["next"]
+////                            addControlHandlers(funcs, doTheRightThing: callback, view: button)
+//                        }
+//                        return button
+//                    default:
+//                        return nil
+//                    }
+//                }
+//            default:
+//                return nil
+//            }
+//        }
+//        return nil
+//    }
 
     
     /* APPLY HANDLERS */
