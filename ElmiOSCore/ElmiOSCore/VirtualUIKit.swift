@@ -51,28 +51,32 @@ class VirtualUIKit : NSObject {
         }
     }
 
-    static func applyPatch(_ patch: Json, eventTree: Json) {
+    static func applyPatch(_ patch: Json) {
         if let type = patch["type"] as? String, let node = patch["node"] as? UIView {
             switch type {
             case "redraw":
-                if let virtualNode = patch["data"] as? Json, let newNode = render(virtualView: virtualNode) {
-                    if let parent = node.superview {
+                if let vNode = patch["data"] as? Json, var eventNode = patch["eventNode"] as? JSValue {
+                    // TODO correct the offset
+                    if let newNode = render(virtualView: vNode, offset: 0, handlerList: &eventNode), let parent = node.superview {
                         replaceSubview(parent: parent, old: node, new: newNode)
-//                        parent.yoga.applyLayout(preservingOrigin: true)
                     }
                 }
+                return
             case "facts":
                 if let facts = patch["data"] as? Json, let tag = facts["tag"] as? String {
                     applyFacts(view: node, facts: facts, tag: tag)
                 }
+                return
             case "append":
-                if let children = patch["data"] as? [Json] {
+                if let children = patch["data"] as? [Json], var eventNode = patch["eventNode"] as? JSValue {
                     for virtualChild in children {
-                        if let child = render(virtualView: virtualChild) {
+                         // TODO correct the offset
+                        if let child = render(virtualView: virtualChild, offset: 0, handlerList: &eventNode) {
                             node.addSubview(child)
                         }
                     }
                 }
+                return
             case "remove-last":
                 if var amount = patch["data"] as? Int {
                     let subviews : [UIView] = node.subviews
@@ -83,6 +87,19 @@ class VirtualUIKit : NSObject {
                         amount -= 1;
                     }
                 }
+                return
+            case "add-handler":
+//                if let handlers = patch["data"] as? Json {
+//                    // TODO
+//                    break
+//                    addHandlers(handlers, view: node)
+//                }
+                return
+            case "remove-handler":
+//                if let handlers = patch["data"] as? Json {
+//                    removeHand
+//                }
+                return
             default:
                 return
             }
@@ -129,29 +146,24 @@ class VirtualUIKit : NSObject {
     /* RENDER */
 
 
-    static func initialRender(view: Json, eventTree: inout JSValue) {
+    static func initialRender(view: Json, handlerList: inout JSValue) {
         print("initialRender")
-        print("eventTree")
-        print(eventTree)
-        var offset = 0
-        if let renderedView = render(virtualView: view, eventOffset: &offset, eventNode: &eventTree) {
+        if let renderedView = render(virtualView: view, offset: 0, handlerList: &handlerList) {
             rootView = renderedView
             viewController.addToRootView(subview: renderedView)
         }
     }
 
-    static func render(virtualView: Json, eventOffset: inout Int, eventNode: inout JSValue) -> UIView? {
+    static func render(virtualView: Json, offset: Int, handlerList: inout JSValue) -> UIView? {
         if let type = virtualView["type"] as? String {
             switch type {
             case "thunk":
                 if let node = virtualView["node"] as? Json {
-                    return render(virtualView: node, eventOffset: &eventOffset, eventNode: &eventNode)
+                    return render(virtualView: node, offset: offset, handlerList: &handlerList)
                 }
             case "tagger":
-                if let node = virtualView["node"] as? Json, var newEventNode = eventNode.forProperty("kidListHd") {
-                    eventNode.setValue(newEventNode.forProperty("next"), forProperty: "kidListHd")
-                    var offset = 0
-                    return render(virtualView: node, eventOffset: &offset, eventNode: &newEventNode)
+                if let node = virtualView["node"] as? Json {
+                    return render(virtualView: node, offset: offset, handlerList: &handlerList)
                 }
             case "parent":
                 if let facts = virtualView["facts"] as? Json, let children = virtualView["children"] as? [Json] {
@@ -159,12 +171,13 @@ class VirtualUIKit : NSObject {
 
                     applyFacts(view: view, facts: facts, tag: "parent")
 
+                    var offsetRef = offset
                     for child in children {
-                        // TODO double check that the offset is correct
-                        eventOffset += 1
-                        if let renderedChild = render(virtualView: child, eventOffset: &eventOffset, eventNode: &eventNode) {
+                        offsetRef += 1
+                        if let renderedChild = render(virtualView: child, offset: offsetRef, handlerList: &handlerList) {
                             view.addSubview(renderedChild)
                         }
+                        offsetRef += child["descendantsCount"] as? Int ?? 0
                     }
 
                     return view
@@ -180,14 +193,16 @@ class VirtualUIKit : NSObject {
                         let button: UIButton = UIButton(type: .system)
 
                         applyFacts(view: button, facts: facts, tag: tag)
-                        
-                        
-                        //                        if let handlersNode = eventNode["handlerListHd"] as? Json, let handlerOffset = handlersNode["offset"] as? Int, handlerOffset == eventOffset, let handlers = handlersNode["funcs"] as? [String: JSValue], let callback = handlersNode["callback"] as? JSValue {
-                        if let handlersNode = eventNode.forProperty("handlerListHd"), let handlerOffset = handlersNode.forProperty("offset").toNumber() as? Int, handlerOffset == eventOffset, let funcs = handlersNode.forProperty("funcs"), let callback = handlersNode.forProperty("callback") {
-
-                            print("foundHandlerNode")
-                            eventNode.setValue(handlersNode.forProperty("next"), forProperty: "handlerListHd")
-                            addControlHandlers(funcs.toDictionary() as! [String: Any], doTheRightThing: callback, view: button)
+    
+                        if let handlerNode = handlerList.forProperty("head") {
+                            print("hanndlerList has head")
+                            let handlerOffset = handlerNode.forProperty("offset").toNumber() as Int
+                            print(offset)
+                            print(handlerOffset)
+                            if handlerOffset == offset, let funcs = handlerNode.forProperty("funcs"), let callback = handlerNode.forProperty("callback") {
+                                handlerList.setValue(handlerNode.forProperty("next"), forProperty: "head")
+                                addControlHandlers(funcs.toDictionary() as! [String: Any], doTheRightThing: callback, view: button)
+                            }
                         }
 
                         return button
@@ -201,66 +216,6 @@ class VirtualUIKit : NSObject {
         }
         return nil
     }
-
-//    static func render(virtualView: Json, eventOffset: inout Int, eventNode: inout Json) -> UIView? {
-//        if let type = virtualView["type"] as? String {
-//            switch type {
-//            case "thunk":
-//                if let node = virtualView["node"] as? Json {
-//                    return render(virtualView: node, eventOffset: &eventOffset, eventNode: &eventNode)
-//                }
-//            case "tagger":
-//                if let node = virtualView["node"] as? Json, var newEventNode = eventNode["kidListHd"] as? Json {
-//                    eventNode["kidListHd"] = newEventNode["next"]
-//                    var offset = 0
-//                    return render(virtualView: node, eventOffset: &offset, eventNode: &newEventNode)
-//                }
-//            case "parent":
-//                if let facts = virtualView["facts"] as? Json, let children = virtualView["children"] as? [Json] {
-//                    let view: UIView = UIView()
-//
-//                    applyFacts(view: view, facts: facts, tag: "parent")
-//
-//                    for child in children {
-//                        // TODO double check that the offset is correct
-//                        eventOffset += 1
-//                        if let renderedChild = render(virtualView: child, eventOffset: &eventOffset, eventNode: &eventNode) {
-//                            view.addSubview(renderedChild)
-//                        }
-//                    }
-//
-//                    return view
-//                }
-//            case "leaf":
-//                if let tag = virtualView["tag"] as? String, let facts = virtualView["facts"] as? Json {
-//                    switch tag {
-//                    case "label":
-//                        let label: UILabel = UILabel()
-//                        applyFacts(view: label, facts: facts, tag: tag)
-//                        return label
-//                    case "button":
-//                        let button: UIButton = UIButton(type: .system)
-//
-//                        applyFacts(view: button, facts: facts, tag: tag)
-//
-////                        if let handlersNode = eventNode["handlerListHd"] as? Json, let handlerOffset = handlersNode["offset"] as? Int, handlerOffset == eventOffset, let handlers = handlersNode["funcs"] as? [String: JSValue], let callback = handlersNode["callback"] as? JSValue {
-//                        if let handlersNode = eventNode["handlerListHd"] as? Json, let handlerOffset = handlersNode["offset"] as? Int, handlerOffset == eventOffset, let funcs = handlersNode["funcs"] as? Json {
-//                            print("foundHandlerNode")
-//                            eventNode["handlerListHd"] = handlersNode["next"]
-////                            addControlHandlers(funcs, doTheRightThing: callback, view: button)
-//                        }
-//                        return button
-//                    default:
-//                        return nil
-//                    }
-//                }
-//            default:
-//                return nil
-//            }
-//        }
-//        return nil
-//    }
-
     
     /* APPLY HANDLERS */
 
