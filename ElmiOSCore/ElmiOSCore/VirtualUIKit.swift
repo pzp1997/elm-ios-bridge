@@ -284,6 +284,7 @@ class VirtualUIKit : NSObject {
             break
         case "button":
             applyButtonFacts(button: view as! UIButton, facts: facts)
+            break
         case "parent":
             applyViewFacts(view: view, facts: facts)
             break
@@ -318,8 +319,10 @@ class VirtualUIKit : NSObject {
                 break
             case "textAlignment":
                 if let value = facts[key] as? String {
-                    // TODO store textAlignment as an Int in JSON and use rawValue
-                    label.textAlignment = extractTextAlignment(value)
+                    if let alignment = extractTextAlignment(value) {
+                        // TODO store textAlignment as an Int in JSON and use rawValue
+                        label.textAlignment = alignment
+                    }
                 } else {
                     label.textAlignment = .natural // TODO prior to iOS 9.0, `left` was the default
                 }
@@ -347,8 +350,10 @@ class VirtualUIKit : NSObject {
                 break
             case "lineBreakMode":
                 if let value = facts[key] as? String {
-                    // TODO store lineBreakMode as an Int in JSON and use rawValue
-                    label.lineBreakMode = extractLineBreakMode(value)
+                    if let lineBreakMode = extractLineBreakMode(value) {
+                        // TODO store lineBreakMode as an Int in JSON and use rawValue
+                        label.lineBreakMode = lineBreakMode
+                    }
                 } else {
                     label.lineBreakMode = .byTruncatingTail
                 }
@@ -419,57 +424,91 @@ class VirtualUIKit : NSObject {
 
                 case "flexDirection":
                     if let value = facts[key] as? String {
-                        // TODO store flexDirection as an Int in JSON and use rawValue
-                        layout.flexDirection = extractFlexDirection(value)
+                        if let flexDirection = extractFlexDirection(value) {
+                            // TODO store flexDirection as an Int in JSON and use rawValue
+                            layout.flexDirection = flexDirection
+                        }
+                    } else {
+                        layout.flexDirection = .column
                     }
                     break
 
                 case "justifyContent":
                     if let value = facts[key] as? String {
-                        // TODO store justifyContent as an Int in JSON and use rawValue
-                        layout.justifyContent = extractJustify(value)
+                        if let justify = extractJustify(value) {
+                            // TODO store justifyContent as an Int in JSON and use rawValue
+                            layout.justifyContent = justify
+                        }
+                    } else {
+                        layout.justifyContent = .flexStart
                     }
                     break
 
                 case "flexWrap":
                     if let value = facts[key] as? String {
-                        // TODO store flexWrap as an Int in JSON and use rawValue
-                        layout.flexWrap = extractWrap(value)
+                        if let wrap = extractWrap(value) {
+                            // TODO store flexWrap as an Int in JSON and use rawValue
+                            layout.flexWrap = wrap
+                        }
+                    } else {
+                        layout.flexWrap = .noWrap
                     }
                     break
 
                 case "alignItems":
                     if let value = facts[key] as? String {
-                        // TODO store alignItems as an Int in JSON and use rawValue
-                        layout.alignItems = extractAlign(value) ?? .stretch
+                        if let align = extractAlign(value) {
+                            // TODO store alignItems as an Int in JSON and use rawValue
+                            layout.alignItems = align
+                        }
+                    } else {
+                        layout.alignItems = .stretch
                     }
                     break
 
                 case "alignContent":
                     if let value = facts[key] as? String {
-                        // TODO store alignContent as an Int in JSON and use rawValue
-                        layout.alignContent = extractAlign(value) ?? .flexStart
+                        if let align = extractAlign(value) {
+                            // TODO store alignContent as an Int in JSON and use rawValue
+                            layout.alignContent = align
+                        }
+                    } else {
+                        layout.alignContent = .flexStart
                     }
                     break
 
                 case "direction":
                     if let value = facts[key] as? String {
-                        layout.direction = extractTextDirection(value)
+                        if let direction = extractTextDirection(value) {
+                            layout.direction = direction
+                        }
+                    } else {
+                        layout.direction = .inherit
+                        // default for root is actually LTR, but I think the pseudo root handles this
                     }
+                    break
 
 
                 // Other properties
 
                 case "alignSelf":
-                    if let value = facts[key] as? String, let align = extractAlign(value) {
-                        // TODO store alignSelf as an Int in JSON and use rawValue
-                        layout.alignSelf = align
+                    if let value = facts[key] as? String {
+                        if let align = extractAlign(value) {
+                            // TODO store alignSelf as an Int in JSON and use rawValue
+                            layout.alignSelf = align
+                        }
+                    } else {
+                        layout.alignSelf = .auto
                     }
                     break
 
                 case "position":
-                    if let value = facts[key] as? String, value != "relative" {
-                        layout.position = .absolute
+                    if let value = facts[key] as? String {
+                        if let position = extractPositionType(value) {
+                            layout.position = position
+                        }
+                    } else {
+                        layout.position = .relative
                     }
                     break
 
@@ -479,6 +518,8 @@ class VirtualUIKit : NSObject {
                 case "flexBasis":
                     if let value = facts[key] as? Float {
                         layout.flexBasis = YGValue(value)
+                    } else {
+                        layout.flexBasis = YGValue(Float.nan)
                     }
                     break
 
@@ -492,150 +533,208 @@ class VirtualUIKit : NSObject {
                 case "top":
                     if let value = facts[key] as? Float {
                         layout.top = YGValue(value)
+                    } else {
+                        layout.top = YGValue(Float.nan)
                     }
                     break
                 case "right":
                     if let value = facts[key] as? Float {
                         layout.right = YGValue(value)
+                    } else {
+                        layout.right = YGValue(Float.nan)
                     }
                     break
                 case "bottom":
                     if let value = facts[key] as? Float {
                         layout.bottom = YGValue(value)
+                    } else {
+                        layout.bottom = YGValue(Float.nan)
                     }
                     break
                 case "start":
                     if let value = facts[key] as? Float {
                         layout.start = YGValue(value)
+                    } else {
+                        layout.start = YGValue(Float.nan)
                     }
                     break
                 case "end":
                     if let value = facts[key] as? Float {
                         layout.end = YGValue(value)
+                    } else {
+                        layout.end = YGValue(Float.nan)
                     }
                     break
 
                 case "minWidth":
                     if let value = facts[key] as? Float {
                         layout.minWidth = YGValue(value)
+                    } else {
+                        layout.minWidth = YGValue(Float.nan)
                     }
                     break
                 case "minHeight":
                     if let value = facts[key] as? Float {
                         layout.minHeight = YGValue(value)
+                    } else {
+                        layout.minHeight = YGValue(Float.nan)
                     }
                     break
                 case "maxWidth":
                     if let value = facts[key] as? Float {
                         layout.maxWidth = YGValue(value)
+                    } else {
+                        layout.maxWidth = YGValue(Float.nan)
                     }
                     break
                 case "maxHeight":
                     if let value = facts[key] as? Float {
                         layout.maxHeight = YGValue(value)
+                    } else {
+                        layout.maxHeight = YGValue(Float.nan)
                     }
                     break
 
                 case "width":
                     if let value = facts[key] as? Float {
                         layout.width = YGValue(value)
+                    } else {
+                        layout.width = YGValue(Float.nan)
                     }
                     break
                 case "height":
                     if let value = facts[key] as? Float {
                         layout.height = YGValue(value)
+                    } else {
+                        layout.height = YGValue(Float.nan)
                     }
                     break
 
                 case "margin":
                     if let value = facts[key] as? Float {
                         layout.margin = YGValue(value)
+                    } else {
+                        layout.margin = YGValue(Float.nan)
                     }
                     break
                 case "marginLeft":
                     if let value = facts[key] as? Float {
                         layout.marginLeft = YGValue(value)
+                    } else {
+                        layout.marginLeft = YGValue(Float.nan)
                     }
                     break
                 case "marginTop":
                     if let value = facts[key] as? Float {
                         layout.marginTop = YGValue(value)
+                    } else {
+                        layout.marginTop = YGValue(Float.nan)
                     }
                     break
                 case "marginRight":
                     if let value = facts[key] as? Float {
                         layout.marginRight = YGValue(value)
+                    } else {
+                        layout.marginRight = YGValue(Float.nan)
                     }
                     break
                 case "marginBottom":
                     if let value = facts[key] as? Float {
                         layout.marginBottom = YGValue(value)
+                    } else {
+                        layout.marginBottom = YGValue(Float.nan)
                     }
                     break
                 case "marginStart":
                     if let value = facts[key] as? Float {
                         layout.marginStart = YGValue(value)
+                    } else {
+                        layout.marginStart = YGValue(Float.nan)
                     }
                     break
                 case "marginEnd":
                     if let value = facts[key] as? Float {
                         layout.marginEnd = YGValue(value)
+                    } else {
+                        layout.marginEnd = YGValue(Float.nan)
                     }
                     break
                 case "marginVertical":
                     if let value = facts[key] as? Float {
                         layout.marginVertical = YGValue(value)
+                    } else {
+                        layout.marginVertical = YGValue(Float.nan)
                     }
                     break
                 case "marginHorizontal":
                     if let value = facts[key] as? Float {
                         layout.marginHorizontal = YGValue(value)
+                    } else {
+                        layout.marginHorizontal = YGValue(Float.nan)
                     }
                     break
 
                 case "padding":
                     if let value = facts[key] as? Float {
                         layout.padding = YGValue(value)
+                    } else {
+                        layout.padding = YGValue(Float.nan)
                     }
                     break
                 case "paddingLeft":
                     if let value = facts[key] as? Float {
                         layout.paddingLeft = YGValue(value)
+                    } else {
+                        layout.paddingLeft = YGValue(Float.nan)
                     }
                     break
                 case "paddingTop":
                     if let value = facts[key] as? Float {
                         layout.paddingTop = YGValue(value)
+                    } else {
+                        layout.paddingTop = YGValue(Float.nan)
                     }
                     break
                 case "paddingRight":
                     if let value = facts[key] as? Float {
                         layout.paddingRight = YGValue(value)
+                    } else {
+                        layout.paddingRight = YGValue(Float.nan)
                     }
                     break
                 case "paddingBottom":
                     if let value = facts[key] as? Float {
                         layout.paddingBottom = YGValue(value)
+                    } else {
+                        layout.paddingBottom = YGValue(Float.nan)
                     }
                     break
                 case "paddingStart":
                     if let value = facts[key] as? Float {
                         layout.paddingStart = YGValue(value)
+                    } else {
+                        layout.paddingStart = YGValue(Float.nan)
                     }
                     break
                 case "paddingEnd":
                     if let value = facts[key] as? Float {
                         layout.paddingEnd = YGValue(value)
+                    } else {
+                        layout.paddingEnd = YGValue(Float.nan)
                     }
                     break
                 case "paddingVertical":
                     if let value = facts[key] as? Float {
                         layout.paddingVertical = YGValue(value)
+                    } else {
+                        layout.paddingVertical = YGValue(Float.nan)
                     }
                     break
                 case "paddingHorizontal":
                     if let value = facts[key] as? Float {
                         layout.paddingHorizontal = YGValue(value)
+                    } else {
+                        layout.paddingHorizontal = YGValue(Float.nan)
                     }
                     break
 
@@ -646,44 +745,73 @@ class VirtualUIKit : NSObject {
                     if let value = facts[key] as? Float {
 //                        layout.setValue(CGFloat(value), forKey: key)
                         layout.flexGrow = CGFloat(value)
+                    } else {
+                        layout.flexGrow = 0.0
                     }
+                    break
                 case "flexShrink":
                     if let value = facts[key] as? Float {
                         layout.flexShrink = CGFloat(value)
+                    } else {
+                        layout.flexShrink = 0.0
                     }
+                    break
 
                 case "borderWidth":
                     if let value = facts[key] as? Float {
                         layout.borderWidth = CGFloat(value)
+                    } else {
+                        layout.borderWidth = CGFloat(Float.nan)
                     }
+                    break
                 case "borderLeftWidth":
                     if let value = facts[key] as? Float {
                         layout.borderLeftWidth = CGFloat(value)
+                    } else {
+                        layout.borderLeftWidth = CGFloat(Float.nan)
                     }
+                    break
                 case "borderTopWidth":
                     if let value = facts[key] as? Float {
                         layout.borderTopWidth = CGFloat(value)
+                    } else {
+                        layout.borderTopWidth = CGFloat(Float.nan)
                     }
+                    break
                 case "borderRightWidth":
                     if let value = facts[key] as? Float {
                         layout.borderRightWidth = CGFloat(value)
+                    } else {
+                        layout.borderRightWidth = CGFloat(Float.nan)
                     }
+                    break
                 case "borderBottomWidth":
                     if let value = facts[key] as? Float {
                         layout.borderBottomWidth = CGFloat(value)
+                    } else {
+                        layout.borderBottomWidth = CGFloat(Float.nan)
                     }
+                    break
                 case "borderStartWidth":
                     if let value = facts[key] as? Float {
                         layout.borderStartWidth = CGFloat(value)
+                    } else {
+                        layout.borderStartWidth = CGFloat(Float.nan)
                     }
+                    break
                 case "borderEndWidth":
                     if let value = facts[key] as? Float {
                         layout.borderEndWidth = CGFloat(value)
+                    } else {
+                        layout.borderEndWidth = CGFloat(Float.nan)
                     }
+                    break
 
                 case "aspectRatio":
                     if let value = facts[key] as? Float {
                         layout.aspectRatio = CGFloat(value)
+                    } else {
+                        layout.aspectRatio = CGFloat(Float.nan)
                     }
                     break
 
@@ -698,7 +826,7 @@ class VirtualUIKit : NSObject {
     /* EXTRACT PROPERTY VALUES */
 
 
-    static func extractTextAlignment(_ alignment: String) -> NSTextAlignment {
+    static func extractTextAlignment(_ alignment: String) -> NSTextAlignment? {
         switch alignment {
         case "left":
             return .left
@@ -711,7 +839,7 @@ class VirtualUIKit : NSObject {
         case "natural":
             return .natural
         default:
-            return .left
+            return nil
         }
     }
 
@@ -719,8 +847,8 @@ class VirtualUIKit : NSObject {
         return UIColor(colorLiteralRed: rgba[0], green: rgba[1], blue: rgba[2], alpha: rgba[3])
     }
 
-    static func extractLineBreakMode(_ lbM: String) -> NSLineBreakMode {
-        switch lbM {
+    static func extractLineBreakMode(_ lineBreakMode: String) -> NSLineBreakMode? {
+        switch lineBreakMode {
         case "byWordWrapping":
             return .byWordWrapping
         case "byCharWrapping":
@@ -734,11 +862,11 @@ class VirtualUIKit : NSObject {
         case "byTruncatingMiddle":
             return .byTruncatingMiddle
         default:
-            return .byTruncatingTail
+            return nil
         }
     }
 
-    static func extractFlexDirection(_ direction: String) -> YGFlexDirection {
+    static func extractFlexDirection(_ direction: String) -> YGFlexDirection? {
         switch direction {
         case "row":
             return .row
@@ -749,11 +877,11 @@ class VirtualUIKit : NSObject {
         case "columnReverse":
             return .columnReverse
         default:
-            return .column
+            return nil
         }
     }
 
-    static func extractJustify(_ justify: String) -> YGJustify {
+    static func extractJustify(_ justify: String) -> YGJustify? {
         switch justify {
         case "flexStart":
             return .flexStart
@@ -766,11 +894,11 @@ class VirtualUIKit : NSObject {
         case "spaceAround":
             return .spaceAround
         default:
-            return .flexStart
+            return nil
         }
     }
 
-    static func extractWrap(_ wrap: String) -> YGWrap {
+    static func extractWrap(_ wrap: String) -> YGWrap? {
         switch wrap {
         case "noWrap":
             return .noWrap
@@ -779,12 +907,20 @@ class VirtualUIKit : NSObject {
         case "wrapReverse":
             return .wrapReverse
         default:
-            return .noWrap
+            return nil
         }
     }
 
     static func extractAlign(_ align: String) -> YGAlign? {
         switch align {
+        case "auto":
+            return .auto
+        case "baseline":
+            return .baseline
+        case "spaceAround":
+            return .spaceAround
+        case "spaceBetween":
+            return .spaceBetween
         case "stretch":
             return .stretch
         case "flexStart":
@@ -798,7 +934,7 @@ class VirtualUIKit : NSObject {
         }
     }
 
-    static func extractTextDirection(_ direction: String) -> YGDirection {
+    static func extractTextDirection(_ direction: String) -> YGDirection? {
         switch direction {
         case "inherit":
             return .inherit
@@ -807,7 +943,19 @@ class VirtualUIKit : NSObject {
         case "RTL":
             return .RTL
         default:
-            return .inherit
+            return nil
+        }
+    }
+    
+    static func extractPositionType(_ position: String) -> YGPositionType? {
+        switch position {
+        case "absolute":
+            return .absolute
+        case "relative":
+            return .relative
+        default:
+            return nil
+            
         }
     }
 
