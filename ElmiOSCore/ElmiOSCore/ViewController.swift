@@ -11,11 +11,9 @@ class ViewController: UIViewController {
 
         // patch context
 
-        let initialRender: @convention(block) ([String : Any], JSValue) -> Void = { (view, eventTree) in
-            print("JS eventTree")
-            print(eventTree)
-            var eventTree = eventTree
-            VirtualUIKit.initialRender(view: view, eventTree: &eventTree)
+        let initialRender: @convention(block) ([String : Any], JSValue) -> Void = { (view, handlerList) in
+            var handlerList = handlerList
+            VirtualUIKit.initialRender(view: view, handlerList: &handlerList)
         }
         context.setObject(initialRender, forKeyedSubscript: "initialRender" as (NSCopying & NSObjectProtocol)!)
         

@@ -88,17 +88,22 @@ class VirtualUIKit : NSObject {
                     }
                 }
                 return
-            case "add-handler":
-//                if let handlers = patch["data"] as? Json {
-//                    // TODO
-//                    break
-//                    addHandlers(handlers, view: node)
-//                }
+            case "add-handlers":
+                if let handlers = patch["data"] as? Json {
+                    // TODO this is bad we need the handlers as a JSValue
+//                    addControlHandlers(handlers, view: node as! UIControl)
+                }
                 return
-            case "remove-handler":
-//                if let handlers = patch["data"] as? Json {
-//                    removeHand
-//                }
+            case "remove-handlers":
+                if let handlers = patch["data"] as? [String], let control = node as? UIControl {
+                    removeControlHandlers(handlers, view: control)
+                }
+                return
+            case "remove-all-handlers":
+                if let control = node as? UIControl {
+                    control.removeTarget(nil, action: nil, for: .allEvents)
+                    objc_setAssociatedObject(control, UIControlActionFunctionProtocolAssociatedObjectKey, nil, .OBJC_ASSOCIATION_RETAIN)
+                }
                 return
             default:
                 return
@@ -232,13 +237,12 @@ class VirtualUIKit : NSObject {
         }
     }
 
-    static func removeHandlers(_ handlers: Json, view: UIControl) {
-        for name in handlers.keys {
-            if let eventType = extractEventType(name) {
+    static func removeControlHandlers(_ handlers: [String], view: UIControl) {
+        for handlerName in handlers {
+            if let eventType = extractEventType(handlerName) {
                 view.removeTarget(nil, action: nil, for: eventType)
             }
         }
-        // TODO check if there are no handlers, and if so remove ActionTrampoline.
     }
 
     static func extractEventType(_ handler: String) -> UIControlEvents? {
