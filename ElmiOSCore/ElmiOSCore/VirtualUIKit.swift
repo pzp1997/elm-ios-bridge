@@ -55,11 +55,19 @@ class VirtualUIKit : NSObject {
         if let type = patch["type"] as? String, let node = patch["node"] as? UIView {
             switch type {
             case "redraw":
-                if let data = patch["data"] as? Json, let vNode = data["vNode"] as? Json, let handlerList = data["handlerList"] as? JSValue, let offset = data["offset"] as? Int {
                 print("redraw patch")
+                if let data = patch["data"] as? Json, let vNode = data["vNode"] as? Json, let handlerList = data["handlerList"] as? [Json], let offset = data["offset"] as? Int {
                     var handlersIndex = 0
                     if let newNode = render(virtualView: vNode, offset: offset, handlers: handlerList, handlersIndex: &handlersIndex), let parent = node.superview {
-                        replaceSubview(parent: parent, old: node, new: newNode)
+                        if offset == 0 {
+                            rootView = newNode
+                            viewController.addToRootView(subview: newNode)
+                            node.removeFromSuperview()
+                            viewController.redrawRootView()
+                        } else {
+                            parent.insertSubview(newNode, belowSubview: node)
+                            node.removeFromSuperview()
+                        }
                     }
                 }
                 return
@@ -70,8 +78,8 @@ class VirtualUIKit : NSObject {
                 }
                 return
             case "append":
-                if let data = patch["data"] as? Json, let children = data["vNode"] as? [Json], let handlerList = data["handlerList"] as? JSValue, let offset = data["offset"] as? Int {
                 print("append patch")
+                if let data = patch["data"] as? Json, let children = data["vNode"] as? [Json], let handlerList = data["handlerList"] as? [Json], let offset = data["offset"] as? Int {
                     var handlersIndex = 0
                     for virtualChild in children {
                         if let child = render(virtualView: virtualChild, offset: offset, handlers: handlerList, handlersIndex: &handlersIndex) {
@@ -93,9 +101,9 @@ class VirtualUIKit : NSObject {
                 }
                 return
             case "add-handlers":
-                if let handlers = patch["data"] as? Json {
-                    // TODO this is bad we need the handlers as a JSValue
-//                    addControlHandlers(handlers, view: node as! UIControl)
+                print("add-handlers patch")
+                if let data = patch["data"] as? Json, let funcs = data["funcs"] as? Json, let id = data["eventId"] as? UInt64, let control = node as? UIControl {
+                    addControlHandlers(funcs, id: id, view: control)
                 }
                 return
             case "remove-handlers":
@@ -116,12 +124,6 @@ class VirtualUIKit : NSObject {
             }
         }
     }
-
-    static func replaceSubview(parent: UIView, old: UIView, new: UIView) {
-        parent.insertSubview(new, belowSubview: old)
-        old.removeFromSuperview()
-    }
-
 
 
     /* ADD UIKIT NODES TO PATCHES */
