@@ -323,11 +323,11 @@ class VirtualUIKit : NSObject {
             case "textAlignment":
                 if let value = facts[key] as? String {
                     if let alignment = extractTextAlignment(value) {
-                        // TODO store textAlignment as an Int in JSON and use rawValue
+                        // store as Int in JSON and use rawValue
                         label.textAlignment = alignment
                     }
                 } else {
-                    label.textAlignment = .natural // TODO prior to iOS 9.0, `left` was the default
+                    label.textAlignment = .natural // prior to iOS 9.0, `left` was the default
                 }
                 break
             case "font":
@@ -354,7 +354,7 @@ class VirtualUIKit : NSObject {
             case "lineBreakMode":
                 if let value = facts[key] as? String {
                     if let lineBreakMode = extractLineBreakMode(value) {
-                        // TODO store lineBreakMode as an Int in JSON and use rawValue
+                        // store as Int in JSON and use rawValue
                         label.lineBreakMode = lineBreakMode
                     }
                 } else {
@@ -428,7 +428,7 @@ class VirtualUIKit : NSObject {
                 case "flexDirection":
                     if let value = facts[key] as? String {
                         if let flexDirection = extractFlexDirection(value) {
-                            // TODO store flexDirection as an Int in JSON and use rawValue
+                            // store as Int in JSON and use rawValue
                             layout.flexDirection = flexDirection
                         }
                     } else {
@@ -439,7 +439,7 @@ class VirtualUIKit : NSObject {
                 case "justifyContent":
                     if let value = facts[key] as? String {
                         if let justify = extractJustify(value) {
-                            // TODO store justifyContent as an Int in JSON and use rawValue
+                            // store as Int in JSON and use rawValue
                             layout.justifyContent = justify
                         }
                     } else {
@@ -450,7 +450,7 @@ class VirtualUIKit : NSObject {
                 case "flexWrap":
                     if let value = facts[key] as? String {
                         if let wrap = extractWrap(value) {
-                            // TODO store flexWrap as an Int in JSON and use rawValue
+                            // store as Int in JSON and use rawValue
                             layout.flexWrap = wrap
                         }
                     } else {
@@ -461,7 +461,7 @@ class VirtualUIKit : NSObject {
                 case "alignItems":
                     if let value = facts[key] as? String {
                         if let align = extractAlign(value) {
-                            // TODO store alignItems as an Int in JSON and use rawValue
+                            // store as Int in JSON and use rawValue
                             layout.alignItems = align
                         }
                     } else {
@@ -472,7 +472,7 @@ class VirtualUIKit : NSObject {
                 case "alignContent":
                     if let value = facts[key] as? String {
                         if let align = extractAlign(value) {
-                            // TODO store alignContent as an Int in JSON and use rawValue
+                            // store as Int in JSON and use rawValue
                             layout.alignContent = align
                         }
                     } else {
@@ -497,7 +497,7 @@ class VirtualUIKit : NSObject {
                 case "alignSelf":
                     if let value = facts[key] as? String {
                         if let align = extractAlign(value) {
-                            // TODO store alignSelf as an Int in JSON and use rawValue
+                            // store as Int in JSON and use rawValue
                             layout.alignSelf = align
                         }
                     } else {
