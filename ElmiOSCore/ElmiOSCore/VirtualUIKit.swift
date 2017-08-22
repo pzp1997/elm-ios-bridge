@@ -56,6 +56,7 @@ class VirtualUIKit : NSObject {
             switch type {
             case "redraw":
                 if let data = patch["data"] as? Json, let vNode = data["vNode"] as? Json, let handlerList = data["handlerList"] as? JSValue, let offset = data["offset"] as? Int {
+                print("redraw patch")
                     var handlersIndex = 0
                     if let newNode = render(virtualView: vNode, offset: offset, handlers: handlerList, handlersIndex: &handlersIndex), let parent = node.superview {
                         replaceSubview(parent: parent, old: node, new: newNode)
@@ -63,12 +64,14 @@ class VirtualUIKit : NSObject {
                 }
                 return
             case "facts":
+                print("facts patch")
                 if let facts = patch["data"] as? Json, let tag = facts["tag"] as? String {
                     applyFacts(view: node, facts: facts, tag: tag)
                 }
                 return
             case "append":
                 if let data = patch["data"] as? Json, let children = data["vNode"] as? [Json], let handlerList = data["handlerList"] as? JSValue, let offset = data["offset"] as? Int {
+                print("append patch")
                     var handlersIndex = 0
                     for virtualChild in children {
                         if let child = render(virtualView: virtualChild, offset: offset, handlers: handlerList, handlersIndex: &handlersIndex) {
@@ -78,6 +81,7 @@ class VirtualUIKit : NSObject {
                 }
                 return
             case "remove-last":
+                print("remove-last patch")
                 if var amount = patch["data"] as? Int {
                     let subviews : [UIView] = node.subviews
                     let subviewsLength = subviews.count
@@ -95,11 +99,13 @@ class VirtualUIKit : NSObject {
                 }
                 return
             case "remove-handlers":
+                print("remove-handlers patch")
                 if let handlers = patch["data"] as? [String], let control = node as? UIControl {
                     removeControlHandlers(handlers, view: control)
                 }
                 return
             case "remove-all-handlers":
+                print("remove-all-handlers patch")
                 if let control = node as? UIControl {
                     control.removeTarget(nil, action: nil, for: .allEvents)
                     objc_setAssociatedObject(control, UIControlActionFunctionProtocolAssociatedObjectKey, nil, .OBJC_ASSOCIATION_RETAIN)
@@ -200,11 +206,8 @@ class VirtualUIKit : NSObject {
 
                         applyFacts(view: button, facts: facts, tag: tag)
     
-                        print(handlersIndex)
                         if let handlerNode = handlers.atIndex(handlersIndex) {
                             let handlerOffset = handlerNode.forProperty("offset").toNumber() as Int
-                            print(offset)
-                            print(handlerOffset)
                             if handlerOffset == offset, let funcs = handlerNode.forProperty("funcs") {
                                 let eventId = handlerNode.forProperty("eventId").toNumber() as Int
                                 addControlHandlers(funcs.toDictionary() as! Json, id: eventId, view: button)
@@ -229,8 +232,7 @@ class VirtualUIKit : NSObject {
     static func addControlHandlers(_ handlers: Json, id: Int, view: UIControl) {
         for name in handlers.keys {
             if let eventType = extractEventType(name) {
-                print("addControlHandlers")
-                print(name)
+//                print("addControlHandlers: " + name)
                 view.addAction(event: eventType, { (_, event) in
                     print("invoking JS callback")
                     viewController.handleEvent(id: id, name: name, data: event)
@@ -280,7 +282,7 @@ class VirtualUIKit : NSObject {
     /* APPLY FACTS */
 
     static func applyFacts(view: UIView, facts: Json, tag: String) {
-        print("applyFacts")
+//        print("applyFacts")
         switch tag {
         case "label":
             applyLabelFacts(label: view as! UILabel, facts: facts)
@@ -303,6 +305,7 @@ class VirtualUIKit : NSObject {
     }
 
     static func applyLabelFacts(label: UILabel, facts: Json) {
+        print("applyLabelFacts")
         for key in facts.keys {
             switch key {
             case "text":
@@ -401,6 +404,7 @@ class VirtualUIKit : NSObject {
     }
 
     static func applyViewFacts(view: UIView, facts: Json) {
+        print("applyViewFacts")
         for key in facts.keys {
             switch key {
             case "backgroundColor":
