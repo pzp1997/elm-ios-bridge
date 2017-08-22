@@ -397,6 +397,12 @@ class VirtualUIKit : NSObject {
                     button.setTitle(nil, for: .normal)
                 }
                 break
+            case "textColor":
+                if let value = facts[key] as? [Float] {
+                    button.setTitleColor(extractColor(value), for: .normal)
+                } else {
+                    button.setTitleColor(extractColor([0.0, 122.0, 255.0, 1.0]), for: .normal)
+                }
             default:
                 break
             }
