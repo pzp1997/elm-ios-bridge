@@ -19,7 +19,7 @@ class VirtualUIKit : NSObject {
     
 
     static func applyPatches(_ patches: inout Json) {
-        print("applyPatches")
+//        print("applyPatches")
         if let root = rootView {
             addUIKitNodes(view: root, patch: &patches)
             applyPatchesHelp(patches)
@@ -55,7 +55,7 @@ class VirtualUIKit : NSObject {
         if let type = patch["type"] as? String, let node = patch["node"] as? UIView {
             switch type {
             case "redraw":
-                print("redraw patch")
+//                print("redraw patch")
                 if let data = patch["data"] as? Json, let vNode = data["vNode"] as? Json, let handlerList = data["handlerList"] as? [Json], let offset = data["offset"] as? Int {
                     var handlersIndex = 0
                     if let newNode = render(virtualView: vNode, offset: offset, handlers: handlerList, handlersIndex: &handlersIndex), let parent = node.superview {
@@ -72,13 +72,13 @@ class VirtualUIKit : NSObject {
                 }
                 return
             case "facts":
-                print("facts patch")
+//                print("facts patch")
                 if let facts = patch["data"] as? Json, let tag = facts["tag"] as? String {
                     applyFacts(view: node, facts: facts, tag: tag)
                 }
                 return
             case "append":
-                print("append patch")
+//                print("append patch")
                 if let data = patch["data"] as? Json, let children = data["vNode"] as? [Json], let handlerList = data["handlerList"] as? [Json], let offset = data["offset"] as? Int {
                     var handlersIndex = 0
                     for virtualChild in children {
@@ -89,7 +89,7 @@ class VirtualUIKit : NSObject {
                 }
                 return
             case "remove-last":
-                print("remove-last patch")
+//                print("remove-last patch")
                 if var amount = patch["data"] as? Int {
                     let subviews : [UIView] = node.subviews
                     let subviewsLength = subviews.count
@@ -101,19 +101,19 @@ class VirtualUIKit : NSObject {
                 }
                 return
             case "add-handlers":
-                print("add-handlers patch")
+//                print("add-handlers patch")
                 if let data = patch["data"] as? Json, let funcs = data["funcs"] as? Json, let id = data["eventId"] as? UInt64, let control = node as? UIControl {
                     addControlHandlers(funcs, id: id, view: control)
                 }
                 return
             case "remove-handlers":
-                print("remove-handlers patch")
+//                print("remove-handlers patch")
                 if let handlers = patch["data"] as? [String], let control = node as? UIControl {
                     removeControlHandlers(handlers, view: control)
                 }
                 return
             case "remove-all-handlers":
-                print("remove-all-handlers patch")
+//                print("remove-all-handlers patch")
                 if let control = node as? UIControl {
                     control.removeTarget(nil, action: nil, for: .allEvents)
                     objc_setAssociatedObject(control, UIControlActionFunctionProtocolAssociatedObjectKey, nil, .OBJC_ASSOCIATION_RETAIN)
@@ -160,7 +160,7 @@ class VirtualUIKit : NSObject {
 
 
     static func initialRender(view: Json, handlers: [Json]) {
-        print("initialRender")
+//        print("initialRender")
         var handlersIndex = 0
         if let renderedView = render(virtualView: view, offset: 0, handlers: handlers, handlersIndex: &handlersIndex) {
             rootView = renderedView
@@ -237,7 +237,7 @@ class VirtualUIKit : NSObject {
             if let eventType = extractEventType(name) {
 //                print("addControlHandlers: " + name)
                 view.addAction(event: eventType, { (_, event) in
-                    print("invoking JS callback")
+//                    print("invoking JS callback")
                     viewController.handleEvent(id: id, name: name, data: event)
 //                    doTheRightThing.call(withArguments: [name, event])
                 })
@@ -308,7 +308,7 @@ class VirtualUIKit : NSObject {
     }
 
     static func applyLabelFacts(label: UILabel, facts: Json) {
-        print("applyLabelFacts")
+//        print("applyLabelFacts")
         for key in facts.keys {
             switch key {
             case "text":
@@ -388,7 +388,7 @@ class VirtualUIKit : NSObject {
     }
 
     static func applyButtonFacts(button: UIButton, facts: Json) {
-        print("applyButtonFacts")
+//        print("applyButtonFacts")
         for key in facts.keys {
             switch key {
             case "text":
@@ -413,7 +413,7 @@ class VirtualUIKit : NSObject {
     }
 
     static func applyViewFacts(view: UIView, facts: Json) {
-        print("applyViewFacts")
+//        print("applyViewFacts")
         for key in facts.keys {
             switch key {
             case "backgroundColor":
