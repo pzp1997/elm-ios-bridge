@@ -11,9 +11,9 @@ class ViewController: UIViewController {
 
         // patch context
 
-        let initialRender: @convention(block) ([String : Any], JSValue) -> Void = { (view, handlerList) in
+        let initialRender: @convention(block) ([String : Any], [[String : Any]]) -> Void = { (view, handlerList) in
             var handlerList = handlerList
-            VirtualUIKit.initialRender(view: view, handlerList: &handlerList)
+            VirtualUIKit.initialRender(view: view, handlers: handlerList)
         }
         context.setObject(initialRender, forKeyedSubscript: "initialRender" as (NSCopying & NSObjectProtocol)!)
         
@@ -107,6 +107,9 @@ class ViewController: UIViewController {
     
     func addToRootView(subview: UIView) {
         self.view.addSubview(subview)
+    }
+    
+    func redrawRootView() {
         self.view.yoga.applyLayout(preservingOrigin: true)
     }
 

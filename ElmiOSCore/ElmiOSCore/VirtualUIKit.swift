@@ -157,16 +157,17 @@ class VirtualUIKit : NSObject {
     /* RENDER */
 
 
-    static func initialRender(view: Json, handlers: JSValue) {
+    static func initialRender(view: Json, handlers: [Json]) {
         print("initialRender")
         var handlersIndex = 0
         if let renderedView = render(virtualView: view, offset: 0, handlers: handlers, handlersIndex: &handlersIndex) {
             rootView = renderedView
             viewController.addToRootView(subview: renderedView)
+            viewController.redrawRootView()
         }
     }
 
-    static func render(virtualView: Json, offset: Int, handlers: JSValue, handlersIndex: inout Int) -> UIView? {
+    static func render(virtualView: Json, offset: Int, handlers: [Json], handlersIndex: inout Int) -> UIView? {
         if let type = virtualView["type"] as? String {
             switch type {
             case "thunk":
@@ -205,12 +206,11 @@ class VirtualUIKit : NSObject {
                         let button: UIButton = UIButton(type: .system)
 
                         applyFacts(view: button, facts: facts, tag: tag)
-    
-                        if let handlerNode = handlers.atIndex(handlersIndex) {
-                            let handlerOffset = handlerNode.forProperty("offset").toNumber() as Int
-                            if handlerOffset == offset, let funcs = handlerNode.forProperty("funcs") {
-                                let eventId = handlerNode.forProperty("eventId").toNumber() as Int
-                                addControlHandlers(funcs.toDictionary() as! Json, id: eventId, view: button)
+
+                        if !handlers.isEmpty {
+                            let handlerNode = handlers[handlersIndex] as Json
+                            if let handlerOffset = handlerNode["offset"] as? Int, handlerOffset == offset, let funcs = handlerNode["funcs"] as? Json, let eventId = handlerNode["eventId"] as? UInt64 {
+                                addControlHandlers(funcs, id: eventId, view: button)
                                 handlersIndex += 1
                             }
                         }
@@ -229,7 +229,8 @@ class VirtualUIKit : NSObject {
     
     /* APPLY HANDLERS */
 
-    static func addControlHandlers(_ handlers: Json, id: Int, view: UIControl) {
+    // static func addControlHandlers<T: Sequence>(_ handlers: T, id: UInt64, view: UIControl) where T.Iterator.Element == String {
+    static func addControlHandlers(_ handlers: Json, id: UInt64, view: UIControl) {
         for name in handlers.keys {
             if let eventType = extractEventType(name) {
 //                print("addControlHandlers: " + name)
