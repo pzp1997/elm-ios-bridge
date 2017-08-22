@@ -85,6 +85,10 @@ class ViewController: UIViewController {
 
         return context
     }()
+    
+    func handleEvent(id: UInt64, name: String, data: Any) {
+        _ = jsContext?.objectForKeyedSubscript("Elm").objectForKeyedSubscript("Main").objectForKeyedSubscript("handleEvent").call(withArguments: [id, name, data])
+    }
 
     var window: UIWindow?
 
