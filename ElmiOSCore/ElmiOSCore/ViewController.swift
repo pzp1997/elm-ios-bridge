@@ -109,6 +109,14 @@ class ViewController: UIViewController {
         _ = jsContext?.objectForKeyedSubscript("Elm").objectForKeyedSubscript("Main").objectForKeyedSubscript("start").call(withArguments: [])
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        self.view.configureLayout { (layout) in
+            layout.width = YGValue(size.width)
+            layout.height = YGValue(size.height)
+        }
+        redrawRootView()
+    }
+    
     func addToRootView(subview: UIView) {
         self.view.addSubview(subview)
     }
