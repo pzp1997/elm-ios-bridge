@@ -847,7 +847,7 @@ class VirtualUIKit : NSObject {
     }
 
     static func extractColor(_ rgba: [Float]) -> UIColor {
-        return UIColor(colorLiteralRed: rgba[0], green: rgba[1], blue: rgba[2], alpha: rgba[3])
+        return UIColor(red: CGFloat(rgba[0] / 255), green: CGFloat(rgba[1] / 255), blue: CGFloat(rgba[2] / 255), alpha: CGFloat(rgba[3]))
     }
 
     static func extractLineBreakMode(_ lineBreakMode: String) -> NSLineBreakMode? {
