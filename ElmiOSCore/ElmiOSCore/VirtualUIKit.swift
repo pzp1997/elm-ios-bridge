@@ -10,8 +10,9 @@ class VirtualUIKit : NSObject {
     static var rootView : UIView? = nil
     static let viewController : ViewController = {
         let window = UIApplication.shared.keyWindow!
-        let navigationController = window.rootViewController as! UINavigationController
-        return navigationController.viewControllers.first as! ViewController
+//        let navigationController = window.rootViewController as! UINavigationController
+//        return navigationController.viewControllers.first as! ViewController
+        return window.rootViewController as! ViewController
     }()
 
 
