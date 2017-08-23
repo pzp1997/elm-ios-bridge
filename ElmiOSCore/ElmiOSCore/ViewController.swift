@@ -11,8 +11,9 @@ class ViewController: UIViewController {
 
         // patch context
 
-        let initialRender: @convention(block) ([String : Any]) -> Void = { (view) in
-            VirtualUIKit.initialRender(view: view)
+        let initialRender: @convention(block) ([String : Any], [[String : Any]]) -> Void = { (view, handlerList) in
+            var handlerList = handlerList
+            VirtualUIKit.initialRender(view: view, handlers: handlerList)
         }
         context.setObject(initialRender, forKeyedSubscript: "initialRender" as (NSCopying & NSObjectProtocol)!)
         
@@ -25,7 +26,7 @@ class ViewController: UIViewController {
         // add missing BOM stuff
 
         let setTimeout: @convention(block) (JSValue, Double) -> Void = { (function, timeout) in
-            print("setTimeout")
+//            print("setTimeout")
             DispatchQueue.main.asyncAfter(deadline: .now() + timeout, execute: { () -> Void in
                 function.call(withArguments: [])
             })
@@ -46,7 +47,7 @@ class ViewController: UIViewController {
 //            })
 //        }
         let setInterval: @convention(block) (JSValue, Double) -> Int = { (function, interval) in
-            print("setInterval")
+//            print("setInterval")
             Timer.scheduledTimer(withTimeInterval: interval / 1000.0, repeats: true, block: { (timer) in function.call(withArguments: []) })
             timerId += 1
             return timerId
@@ -54,7 +55,7 @@ class ViewController: UIViewController {
         context.setObject(setInterval, forKeyedSubscript: "setInterval" as (NSCopying & NSObjectProtocol)!)
 
         let clearInterval: @convention(block) (Int) -> Void = { id in
-            print(id)
+//            print(id)
         }
         context.setObject(clearInterval, forKeyedSubscript: "clearInterval" as (NSCopying & NSObjectProtocol)!)
 
@@ -71,7 +72,7 @@ class ViewController: UIViewController {
 
         // load Elm program
 
-        guard let appJsPath = Bundle.main.path(forResource: "tick2", ofType: "js") else {
+        guard let appJsPath = Bundle.main.path(forResource: "index", ofType: "js") else {
             return nil
         }
 
@@ -84,6 +85,10 @@ class ViewController: UIViewController {
 
         return context
     }()
+    
+    func handleEvent(id: UInt64, name: String, data: Any) {
+        _ = jsContext?.objectForKeyedSubscript("Elm").objectForKeyedSubscript("Main").objectForKeyedSubscript("handleEvent").call(withArguments: [id, name, data])
+    }
 
     var window: UIWindow?
 
@@ -104,8 +109,21 @@ class ViewController: UIViewController {
         _ = jsContext?.objectForKeyedSubscript("Elm").objectForKeyedSubscript("Main").objectForKeyedSubscript("start").call(withArguments: [])
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+//        print("rotating")
+        self.view.configureLayout { (layout) in
+            layout.width = YGValue(size.width)
+            layout.height = YGValue(size.height)
+        }
+        redrawRootView()
+    }
+    
     func addToRootView(subview: UIView) {
         self.view.addSubview(subview)
+    }
+    
+    func redrawRootView() {
+//        print("redrawRootView")
         self.view.yoga.applyLayout(preservingOrigin: true)
     }
 
