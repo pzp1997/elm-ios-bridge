@@ -406,9 +406,20 @@ class VirtualUIKit : NSObject {
                 } else {
                     button.setTitleColor(extractColor([0.0, 122.0, 255.0, 1.0]), for: .normal)
                 }
+            case "shadowColor":
+                if let value = facts[key] as? [Float] {
+                    button.setTitleShadowColor(extractColor(value), for: .normal)
+                } else {
+                    // TODO double check that nil is the default value
+                    button.setTitleShadowColor(nil, for: .normal)
+                }
             default:
                 break
             }
+        }
+        
+        if let label = button.titleLabel {
+            applyLabelFacts(label: label, facts: facts)
         }
     }
 
