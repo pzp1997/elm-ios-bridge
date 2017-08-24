@@ -4,7 +4,8 @@ import JavaScriptCore
 
 class ViewController: UIViewController {
 
-    static var timerId = 0
+    static var nextTimerId = 0
+    static var timerRegistry = [Int: Timer]()
 
     lazy var jsContext: JSContext? = {
         let context: JSContext = JSContext()
@@ -26,36 +27,31 @@ class ViewController: UIViewController {
         // add missing BOM stuff
 
         let setTimeout: @convention(block) (JSValue, Double) -> Void = { (function, timeout) in
-//            print("setTimeout")
             DispatchQueue.main.asyncAfter(deadline: .now() + timeout, execute: { () -> Void in
                 function.call(withArguments: [])
             })
         }
         context.setObject(setTimeout, forKeyedSubscript: "setTimeout" as (NSCopying & NSObjectProtocol)!)
 
-//        let setInterval: @convention(block) (JSValue, Double) -> Void = { (function, interval) in
-//            Timer.scheduledTimer(timeInterval: interval / 1000.0, repeats: true, block: { (timer) in
-//                function.call(withArguments: [])
-//            })
-//            return
-//        }
 
-//        func setIntervalHelp(function: JSValue, interval: Double) {
-//            DispatchQueue.main.asyncAfter(deadline: .now() + interval, execute: { () -> Void in
-//                function.call(withArguments: [])
-//                setIntervalHelp(function: function, interval: interval)
-//            })
-//        }
         let setInterval: @convention(block) (JSValue, Double) -> Int = { (function, interval) in
-//            print("setInterval")
-            Timer.scheduledTimer(withTimeInterval: interval / 1000.0, repeats: true, block: { (timer) in function.call(withArguments: []) })
-            timerId += 1
+            let timer = Timer.scheduledTimer(timeInterval: interval / 1000.0, repeats: true, action: { (timer) in
+                function.call(withArguments: [])
+            })
+
+            let timerId = nextTimerId
+            timerRegistry[timerId] = timer
+            nextTimerId += 1
             return timerId
         }
         context.setObject(setInterval, forKeyedSubscript: "setInterval" as (NSCopying & NSObjectProtocol)!)
 
         let clearInterval: @convention(block) (Int) -> Void = { id in
-//            print(id)
+            if let timer = timerRegistry[id] {
+                timer.invalidate()
+                objc_setAssociatedObject(timer, TimerActionFunctionProtocolAssociatedObjectKey, nil, .OBJC_ASSOCIATION_RETAIN)
+                timerRegistry.removeValue(forKey: id)
+            }
         }
         context.setObject(clearInterval, forKeyedSubscript: "clearInterval" as (NSCopying & NSObjectProtocol)!)
 
@@ -128,4 +124,30 @@ class ViewController: UIViewController {
     }
 
 }
+
+
+/* TIMERS WITH ANON FUNCS */
+
+class TimerActionTrampoline: NSObject {
+    var action: (Timer) -> Void
+    init(action: @escaping (Timer) -> Void) {
+        self.action = action
+    }
+    @objc func timerFireMethod(timer: Timer) {
+        action(timer)
+    }
+}
+
+let TimerActionFunctionProtocolAssociatedObjectKey = UnsafeMutablePointer<Int8>.allocate(capacity: 1)
+
+protocol TimerActionFunctionProtocol {}
+extension TimerActionFunctionProtocol {
+    static func scheduledTimer(timeInterval: Double, repeats: Bool, action: @escaping (Timer) -> Void) -> Timer {
+        let trampoline = TimerActionTrampoline(action: action)
+        let timer = Timer.scheduledTimer(timeInterval: timeInterval, target: trampoline, selector: #selector(TimerActionTrampoline.timerFireMethod(timer:)), userInfo: nil, repeats: repeats)
+        objc_setAssociatedObject(timer, TimerActionFunctionProtocolAssociatedObjectKey, trampoline, .OBJC_ASSOCIATION_RETAIN)
+        return timer
+    }
+}
+extension Timer: TimerActionFunctionProtocol {}
 
